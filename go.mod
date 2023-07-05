@@ -6,8 +6,8 @@ require (
 	gioui.org v0.0.0-20220318070519-8833a6738a3b
 	github.com/g3n/engine v0.2.0
 	golang.org/x/mobile v0.0.0-20220307220422-55113b94f09c
-	google.golang.org/grpc v1.48.0
-	google.golang.org/protobuf v1.28.0
+	google.golang.org/grpc v1.53.0
+	google.golang.org/protobuf v1.28.1
 )
 
 require (
@@ -38,7 +38,7 @@ require (
 	github.com/yuin/goldmark v1.4.0 // indirect
 	//golang.org/x/net v0.0.0-20220708220712-1185a9018129 // indirect
 	golang.org/x/text v0.7.0 // indirect
-	google.golang.org/genproto v0.0.0-20220714211235-042d03aeabc9 // indirect
+	google.golang.org/genproto v0.0.0-20230110181048-76db0878b65f // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	honnef.co/go/js/dom v0.0.0-20210725211120-f030747120f2 // indirect
