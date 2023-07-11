@@ -10,8 +10,8 @@ import (
 	"net"
 	"strconv"
 
-	"github.com/mrjrieke/nute/mashupsdk"
-	sdk "github.com/mrjrieke/nute/mashupsdk"
+	"github.com/trimble-oss/tierceron-nute/mashupsdk"
+	sdk "github.com/trimble-oss/tierceron-nute/mashupsdk"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )

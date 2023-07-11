@@ -1,4 +1,4 @@
-module github.com/mrjrieke/nute
+module github.com/trimble-oss/tierceron-nute
 
 go 1.20
 

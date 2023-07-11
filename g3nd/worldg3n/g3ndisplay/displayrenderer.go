@@ -2,7 +2,7 @@ package g3ndisplay
 
 import (
 	"github.com/g3n/engine/window"
-	"github.com/mrjrieke/nute/mashupsdk"
+	"github.com/trimble-oss/tierceron-nute/mashupsdk"
 )
 
 type IG3nDisplayRenderer interface {

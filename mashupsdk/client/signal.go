@@ -6,7 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	sdk "github.com/mrjrieke/nute/mashupsdk"
+	sdk "github.com/trimble-oss/tierceron-nute/mashupsdk"
 )
 
 func initSignalProcessor(mshCtx *sdk.MashupContext) {

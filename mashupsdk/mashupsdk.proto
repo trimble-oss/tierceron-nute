@@ -2,7 +2,7 @@ syntax = "proto3";
 
 import "google/protobuf/empty.proto";
 
-option go_package = "github.com/mrjrieke/nute/mashupsdk";
+option go_package = "github.com/trimble-oss/tierceron-nute/mashupsdk";
 option java_multiple_files = true;
 option java_package = "nute.mashupsdk";
 option java_outer_classname = "MashupSdk";
