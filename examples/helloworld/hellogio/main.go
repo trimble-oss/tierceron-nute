@@ -8,9 +8,9 @@ import (
 
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
-	"github.com/mrjrieke/nute/mashupsdk"
-	"github.com/mrjrieke/nute/mashupsdk/client"
-	"github.com/mrjrieke/nute/mashupsdk/guiboot"
+	"github.com/trimble-oss/tierceron-nute/mashupsdk"
+	"github.com/trimble-oss/tierceron-nute/mashupsdk/client"
+	"github.com/trimble-oss/tierceron-nute/mashupsdk/guiboot"
 
 	"gioui.org/app"
 	"gioui.org/font/gofont"

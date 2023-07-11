@@ -1,10 +1,10 @@
 package guiboot
 
 import (
-	"github.com/mrjrieke/nute/mashupsdk/guiboot/fyneboot"
-	"github.com/mrjrieke/nute/mashupsdk/guiboot/g3nboot"
-	"github.com/mrjrieke/nute/mashupsdk/guiboot/gioboot"
-	"github.com/mrjrieke/nute/mashupsdk/guiboot/gomobileboot"
+	"github.com/trimble-oss/tierceron-nute/mashupsdk/guiboot/fyneboot"
+	"github.com/trimble-oss/tierceron-nute/mashupsdk/guiboot/g3nboot"
+	"github.com/trimble-oss/tierceron-nute/mashupsdk/guiboot/gioboot"
+	"github.com/trimble-oss/tierceron-nute/mashupsdk/guiboot/gomobileboot"
 )
 
 type GuiProvider int64

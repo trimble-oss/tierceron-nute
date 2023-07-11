@@ -6,8 +6,8 @@ import (
 
 	"github.com/g3n/engine/core"
 	"github.com/g3n/engine/math32"
-	"github.com/mrjrieke/nute/g3nd/g3nmash"
-	"github.com/mrjrieke/nute/g3nd/g3nworld"
+	"github.com/trimble-oss/tierceron-nute/g3nd/g3nmash"
+	"github.com/trimble-oss/tierceron-nute/g3nd/g3nworld"
 )
 
 type MashupRenderer struct {

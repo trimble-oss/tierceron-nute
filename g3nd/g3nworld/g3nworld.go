@@ -21,13 +21,13 @@ import (
 	"github.com/g3n/engine/util/helper"
 	"github.com/g3n/engine/window"
 	"github.com/go-gl/glfw/v3.3/glfw"
-	"github.com/mrjrieke/nute/g3nd/g3nmash"
-	g3ndpalette "github.com/mrjrieke/nute/g3nd/palette"
-	"github.com/mrjrieke/nute/g3nd/worldg3n/g3ndisplay"
-	"github.com/mrjrieke/nute/mashupsdk"
-	"github.com/mrjrieke/nute/mashupsdk/client"
-	"github.com/mrjrieke/nute/mashupsdk/guiboot"
-	"github.com/mrjrieke/nute/mashupsdk/server"
+	"github.com/trimble-oss/tierceron-nute/g3nd/g3nmash"
+	g3ndpalette "github.com/trimble-oss/tierceron-nute/g3nd/palette"
+	"github.com/trimble-oss/tierceron-nute/g3nd/worldg3n/g3ndisplay"
+	"github.com/trimble-oss/tierceron-nute/mashupsdk"
+	"github.com/trimble-oss/tierceron-nute/mashupsdk/client"
+	"github.com/trimble-oss/tierceron-nute/mashupsdk/guiboot"
+	"github.com/trimble-oss/tierceron-nute/mashupsdk/server"
 )
 
 type mashupSdkApiHandler struct {
