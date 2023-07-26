@@ -4,12 +4,15 @@ import (
 	"context"
 	"crypto/sha256"
 	"crypto/tls"
+	"crypto/x509"
 	"encoding/hex"
 	"encoding/json"
+	"encoding/pem"
 	"log"
 	"math/rand"
 	"net"
 	"os/exec"
+	"strconv"
 	"syscall"
 
 	"github.com/trimble-oss/tierceron-nute/mashupsdk"
@@ -23,6 +26,7 @@ import (
 // also sets up signal handling in event of either system
 // shutting down.
 var handshakeConnectionConfigs *sdk.MashupConnectionConfigs
+var remoteConnectionConfigs *sdk.MashupConnectionConfigs
 var clientConnectionConfigs *sdk.MashupConnectionConfigs
 var serverConnectionConfigs *sdk.MashupConnectionConfigs
 
@@ -34,7 +38,7 @@ var handshakeCompleteChan chan bool
 var mashupCertBytes []byte
 
 // forkMashup -- starts mashup
-func forkMashup(mashupGoodies map[string]interface{}) error {
+func ForkMashup(mashupGoodies map[string]interface{}) error {
 	// exPath string, envParams []string, params []string
 
 	var procAttr = syscall.ProcAttr{
@@ -63,68 +67,15 @@ func forkMashup(mashupGoodies map[string]interface{}) error {
 	return forkErr
 }
 
-func initContext(mashupApiHandler mashupsdk.MashupApiHandler,
-	mashupGoodies map[string]interface{}) *sdk.MashupContext {
-	log.Printf("Initializing Mashup.\n")
+func localBootstrapInit(connectionConfigs mashupsdk.MashupConnectionConfigs, mashupGoodies map[string]interface{}) *sdk.MashupContext {
+	log.Printf("Initializing Local Mashup.\n")
 
 	handshakeCompleteChan = make(chan bool)
-	var err error
-	mashupContext = &sdk.MashupContext{Context: context.Background(), MashupGoodies: mashupGoodies}
-	insecure = mashupGoodies["tls-skip-validation"].(*bool)
-	var maxMessageLength int = -1
-	if mml, mmlOk := mashupGoodies["maxMessageLength"].(int); mmlOk {
-		maxMessageLength = mml
-	}
-
-	// Initialize local server.
-	mashupCertBytes, err = sdk.MashupCert.ReadFile("tls/mashup.crt")
-	if err != nil {
-		log.Fatalf("Couldn't load cert: %v", err)
-	}
-
-	mashupKeyBytes, err := sdk.MashupKey.ReadFile("tls/mashup.key")
-	if err != nil {
-		log.Fatalf("Couldn't load key: %v", err)
-	}
-
-	serverCert, err := tls.X509KeyPair(mashupCertBytes, mashupKeyBytes)
-	if err != nil {
-		log.Fatalf("failed to serve: %v", err)
-	}
-	creds := credentials.NewServerTLSFromCert(&serverCert)
-
-	var handshakeServer *grpc.Server
-	if maxMessageLength > 0 {
-		handshakeServer = grpc.NewServer(grpc.MaxRecvMsgSize(maxMessageLength), grpc.MaxSendMsgSize(maxMessageLength), grpc.Creds(creds))
-	} else {
-		handshakeServer = grpc.NewServer(grpc.Creds(creds))
-	}
-	lis, err := net.Listen("tcp", "localhost:0")
-	data := make([]byte, 10)
-	for i := range data {
-		data[i] = byte(rand.Intn(256))
-	}
-	randomSha256 := sha256.Sum256(data)
-	handshakeConnectionConfigs = &sdk.MashupConnectionConfigs{
-		AuthToken: string(hex.EncodeToString([]byte(randomSha256[:]))),
-		Port:      int64(lis.Addr().(*net.TCPAddr).Port),
-	}
-
+	handshakeConnectionConfigs = &connectionConfigs
 	forkConnectionConfigs := &sdk.MashupConnectionConfigs{
 		CallerToken: handshakeConnectionConfigs.AuthToken,
 		Port:        handshakeConnectionConfigs.Port,
 	}
-
-	if err != nil {
-		log.Fatalf("Failed to serve: %v", err)
-	}
-	go func() {
-		if maxMessageLength > 0 {
-			InitDialOptions(grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(maxMessageLength), grpc.MaxCallSendMsgSize(maxMessageLength)))
-		}
-		sdk.RegisterMashupServerServer(handshakeServer, &MashupClient{mashupApiHandler: mashupApiHandler})
-		handshakeServer.Serve(lis)
-	}()
 
 	jsonHandshakeCredentials, err := json.Marshal(forkConnectionConfigs)
 	if err != nil {
@@ -135,16 +86,108 @@ func initContext(mashupApiHandler mashupsdk.MashupApiHandler,
 	mashupGoodies["PARAMS"] = append(mashupGoodies["PARAMS"].([]string), "-tls-skip-validation=true")
 
 	// Start mashup..
-	err = forkMashup(mashupGoodies)
+	err = ForkMashup(mashupGoodies)
 	if err != nil {
 		log.Fatalf("Failure to launch: %v", err)
 	}
 
 	<-handshakeCompleteChan
-	log.Printf("Mashup initialized.\n")
-
+	log.Printf("Local Mashup initialized.\n")
 	return mashupContext
 }
+
+func commonInitContext(mashupApiHandler mashupsdk.MashupApiHandler, mashupGoodies map[string]interface{}) *sdk.MashupContext {
+	log.Printf("Initializing Mashup.\n")
+
+	// handshakeCompleteChan = make(chan bool)
+	var err error
+	mashupContext = &mashupsdk.MashupContext{Context: context.Background(), MashupGoodies: mashupGoodies}
+	insecure = mashupGoodies["tls-skip-validation"].(*bool)
+	var maxMessageLength int = -1
+	if mml, mmlOk := mashupGoodies["maxMessageLength"].(int); mmlOk {
+		maxMessageLength = mml
+	}
+
+	mashupCertBytes, err = mashupsdk.MashupCert.ReadFile("tls/mashup.crt")
+	if err != nil {
+		log.Fatalf("Couldn't load cert: %v", err)
+	}
+
+	mashupKeyBytes, err := mashupsdk.MashupKey.ReadFile("tls/mashup.key")
+	if err != nil {
+		log.Fatalf("Couldn't load key: %v", err)
+	}
+
+	serverCert, err := tls.X509KeyPair(mashupCertBytes, mashupKeyBytes)
+	if err != nil {
+		log.Fatalf("failed to serve: %v", err)
+	}
+	creds := credentials.NewServerTLSFromCert(&serverCert)
+
+	var grpcserver *grpc.Server
+	if maxMessageLength > 0 {
+		grpcserver = grpc.NewServer(grpc.MaxRecvMsgSize(maxMessageLength), grpc.MaxSendMsgSize(maxMessageLength), grpc.Creds(creds))
+	} else {
+		grpcserver = grpc.NewServer(grpc.Creds(creds))
+	}
+	lis, err := net.Listen("tcp", "localhost:0")
+	data := make([]byte, 10)
+	for i := range data {
+		data[i] = byte(rand.Intn(256))
+	}
+	randomSha256 := sha256.Sum256(data)
+	connectionConfigs := &mashupsdk.MashupConnectionConfigs{
+		AuthToken: string(hex.EncodeToString([]byte(randomSha256[:]))),
+		Port:      int64(lis.Addr().(*net.TCPAddr).Port),
+	}
+	serverConnectionConfigs = connectionConfigs
+	if err != nil {
+		log.Fatalf("Failed to serve: %v", err)
+	}
+	mashupCertPool := x509.NewCertPool()
+	mashupBlock, _ := pem.Decode([]byte(mashupCertBytes))
+	mashupClientCert, err := x509.ParseCertificate(mashupBlock.Bytes)
+	if err != nil {
+		log.Fatalf("failed to serve: %v", err)
+	}
+	mashupCertPool.AddCert(mashupClientCert)
+
+	var defaultDialOpt grpc.DialOption = grpc.EmptyDialOption{}
+
+	if maxMessageLength > 0 {
+		defaultDialOpt = grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(maxMessageLength), grpc.MaxCallSendMsgSize(maxMessageLength))
+	}
+	// Send credentials back to client....
+	conn, err := grpc.Dial("localhost:"+strconv.Itoa(int(connectionConfigs.Port)), defaultDialOpt, grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{ServerName: "", RootCAs: mashupCertPool, InsecureSkipVerify: *insecure})))
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	// mashupContext = &mashupsdk.MashupContext{Context: context.Background(), MashupGoodies: nil}
+
+	// Contact the server and print out its response.
+	// User's of this library will benefit in following way:
+	// 1. If current application shuts down, mashup
+	// will also be told to shut down through Shutdown() api
+	// call before this app exits.
+	mashupContext.Client = mashupsdk.NewMashupServerClient(conn)
+
+	go func(handler mashupsdk.MashupApiHandler, serv *grpc.Server, maxMessageLength int, lis net.Listener) {
+		if maxMessageLength > 0 {
+			InitDialOptions(grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(maxMessageLength), grpc.MaxCallSendMsgSize(maxMessageLength)))
+		}
+		sdk.RegisterMashupServerServer(grpcserver, &MashupClient{mashupApiHandler: handler})
+		grpcserver.Serve(lis)
+	}(mashupApiHandler, grpcserver, maxMessageLength, lis)
+
+	if mashupGoodies["PARAMS"] != nil {
+		params := mashupGoodies["PARAMS"].([]string)
+		if params[len(params)-1] == "ChatHandler" {
+			return mashupContext
+		}
+	}
+	return localBootstrapInit(*connectionConfigs, mashupGoodies)
+}
+
 func BootstrapInit(mashupPath string,
 	mashupApiHandler mashupsdk.MashupApiHandler,
 	envParams []string,
@@ -173,5 +216,9 @@ func BootstrapInitWithMessageExt(mashupPath string,
 	mashupGoodies["tls-skip-validation"] = insecure
 	mashupGoodies["maxMessageLength"] = maxMessageLength
 
-	return initContext(mashupApiHandler, mashupGoodies)
+	return commonInitContext(mashupApiHandler, mashupGoodies)
+}
+
+func GetServerConfigs() *sdk.MashupConnectionConfigs {
+	return serverConnectionConfigs
 }
