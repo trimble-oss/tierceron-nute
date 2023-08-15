@@ -107,18 +107,6 @@ func (s *MashupServer) UpsertElements(ctx context.Context, in *sdk.MashupDetaile
 	return nil, status.Errorf(codes.Unimplemented, "method UpsertElements not implemented")
 }
 
-func (s *MashupServer) ChatUpsertElements(ctx context.Context, in *sdk.MashupDetailedElementBundle) (*sdk.MashupDetailedElementBundle, error) {
-	log.Printf("UpsertElements called")
-	if in.GetAuthToken() != serverConnectionConfigs.AuthToken {
-		return nil, errors.New("Auth failure")
-	}
-	if s.mashupApiHandler != nil {
-		log.Printf("UpsertElements Delegate to api handler.")
-		return s.mashupApiHandler.ChatUpsertElements(in)
-	}
-	return nil, status.Errorf(codes.Unimplemented, "method UpsertElements not implemented")
-}
-
 func (s *MashupServer) TweakStates(ctx context.Context, in *sdk.MashupElementStateBundle) (*sdk.MashupElementStateBundle, error) {
 	log.Printf("TweakStates called")
 	if in.GetAuthToken() != serverConnectionConfigs.AuthToken {
