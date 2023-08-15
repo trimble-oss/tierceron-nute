@@ -168,3 +168,12 @@ func (c *MashupClient) OnDisplayChange(ctx context.Context, in *sdk.MashupDispla
 	}
 	return displayHint, nil
 }
+
+func SetHandler(c *MashupClient, mashupApiHandler mashupsdk.MashupApiHandler) {
+	log.Printf("SetHandler called")
+	c.mashupApiHandler = mashupApiHandler
+}
+
+func SetServerConfigs(serverconfigs *sdk.MashupConnectionConfigs) {
+	serverConnectionConfigs = serverconfigs
+}

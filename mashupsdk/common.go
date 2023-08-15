@@ -101,6 +101,7 @@ type MashupApiHandler interface {
 	OnDisplayChange(displayHint *MashupDisplayHint)
 	GetElements() (*MashupDetailedElementBundle, error)
 	UpsertElements(detailedElementBundle *MashupDetailedElementBundle) (*MashupDetailedElementBundle, error)
+	ChatUpsertElements(detailedElementBundle *MashupDetailedElementBundle) (*MashupDetailedElementBundle, error)
 	TweakStates(elementStateBundle *MashupElementStateBundle) (*MashupElementStateBundle, error)
 	ResetStates()
 	TweakStatesByMotiv(Motiv)

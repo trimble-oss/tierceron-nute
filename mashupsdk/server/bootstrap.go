@@ -8,7 +8,7 @@ import (
 	"encoding/pem"
 	"log"
 	"net"
-	"strconv"
+	"os"
 	"sync"
 
 	"github.com/trimble-oss/tierceron-nute/mashupsdk"
@@ -27,11 +27,74 @@ var clientConnectionConfigs *sdk.MashupConnectionConfigs
 var serverConnectionConfigs *sdk.MashupConnectionConfigs
 
 func InitServer(creds string, insecure bool, maxMessageLength int, mashupApiHandler mashupsdk.MashupApiHandler, mashupContextInitHandler mashupsdk.MashupContextInitHandler) {
+	// mashupCertBytes, err := mashupsdk.MashupCert.ReadFile("tls/mashup.crt")
+	// if err != nil {
+	// 	log.Printf("Couldn't load cert: %v", err)
+	// 	return
+	// }
+
+	// mashupKeyBytes, err := mashupsdk.MashupKey.ReadFile("tls/mashup.key")
+	// if err != nil {
+	// 	log.Fatalf("Couldn't load key: %v", err)
+	// }
+
+	// cert, err := tls.X509KeyPair(mashupCertBytes, mashupKeyBytes)
+	// if err != nil {
+	// 	log.Fatalf("Couldn't construct key pair: %v", err)
+	// }
+	// cred := credentials.NewServerTLSFromCert(&cert)
+	// s := grpc.NewServer(grpc.Creds(cred))
+
+	// // flumeworld := FlumeWorldApp{}
+
+	// port := os.Getenv("PORT")
+	// if port == "" {
+	// 	port = "8080"
+	// }
+	// lis, err := net.Listen("tcp", ":"+port)
+	// if err != nil {
+	// 	log.Fatalf("failed to listen: %v", err)
+	// }
+
+	// serverConnectionConfigs := &mashupsdk.MashupConnectionConfigs{
+	// 	AuthToken: "c5376ccf9edc2a02499716c7e4f5599e8a96747e8a762c8ebed7a45074ad192a", // server token.
+	// 	Port:      int64(lis.Addr().(*net.TCPAddr).Port),
+	// }
+	// log.Println(serverConnectionConfigs)
+	// client.SetServerConfigs(serverConnectionConfigs)
+	// SetServerConfigs(serverConnectionConfigs)
+	// mashupCertPool := x509.NewCertPool()
+	// mashupBlock, _ := pem.Decode([]byte(mashupCertBytes))
+	// mashupClientCert, err := x509.ParseCertificate(mashupBlock.Bytes)
+	// if err != nil {
+	// 	log.Fatalf("failed to serve: %v", err)
+	// }
+	// mashupCertPool.AddCert(mashupClientCert)
+
+	// defaultDialOpt := grpc.EmptyDialOption{}
+	// conn, err := grpc.Dial("localhost:"+port, defaultDialOpt, grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{ServerName: "", RootCAs: mashupCertPool, InsecureSkipVerify: true})))
+	// if err != nil {
+	// 	log.Fatalf("did not connect: %v", err)
+	// }
+	// mashupContext := &mashupsdk.MashupContext{Context: context.Background(), MashupGoodies: nil}
+	// mashupContext.Client = mashupsdk.NewMashupServerClient(conn)
+
+	// log.Printf("Start Registering server.\n")
+	// serv := &MashupServer{}
+	// // serv.SetHandler(flumeworld.MashupSdkApiHandler)
+	// mashupsdk.RegisterMashupServerServer(s, serv)
+	// log.Printf("server listening at %v", lis.Addr())
+	// log.Printf("My Starting service.\n")
+	// if err := s.Serve(lis); err != nil {
+	// 	log.Fatalf("failed to serve: %v", err)
+	// }
+
 	// Perform handshake...
 	handshakeConfigs := &mashupsdk.MashupConnectionConfigs{}
 	err := json.Unmarshal([]byte(creds), handshakeConfigs)
 	if err != nil {
-		log.Fatalf("Malformed credentials: %s %v", creds, err)
+		log.Printf("Malformed credentials: %s %v", creds, err)
+		return
 	}
 	log.Printf("Startup with insecure: %t\n", insecure)
 	var wg sync.WaitGroup
@@ -39,12 +102,14 @@ func InitServer(creds string, insecure bool, maxMessageLength int, mashupApiHand
 	go func(mapiH mashupsdk.MashupApiHandler) {
 		mashupCertBytes, err := mashupsdk.MashupCert.ReadFile("tls/mashup.crt")
 		if err != nil {
-			log.Fatalf("Couldn't load cert: %v", err)
+			log.Printf("Couldn't load cert: %v", err)
+			return
 		}
 
 		mashupKeyBytes, err := mashupsdk.MashupKey.ReadFile("tls/mashup.key")
 		if err != nil {
-			log.Fatalf("Couldn't load key: %v", err)
+			log.Printf("Couldn't load key: %v", err)
+			return
 		}
 
 		cert, err := tls.X509KeyPair(mashupCertBytes, mashupKeyBytes)
@@ -61,16 +126,33 @@ func InitServer(creds string, insecure bool, maxMessageLength int, mashupApiHand
 			s = grpc.NewServer(grpc.Creds(creds))
 		}
 
-		lis, err := net.Listen("tcp", "localhost:0")
-		if err != nil {
-			log.Fatalf("failed to serve: %v", err)
+		port := os.Getenv("PORT")
+		if port == "" {
+			port = "8080"
 		}
+		lis, err := net.Listen("tcp", ":"+port)
+		if err != nil {
+			log.Printf("failed to listen: %v", err)
+			return
+		}
+
+		// lis, err := net.Listen("tcp", "localhost:0")
+		// if err != nil {
+		// 	log.Fatalf("failed to serve: %v", err)
+		// }
 
 		// Initialize the mashup server configuration and auth
 		// token.
-		serverConnectionConfigs = &mashupsdk.MashupConnectionConfigs{
-			AuthToken: mashupsdk.GenAuthToken(), // server token.
-			Port:      int64(lis.Addr().(*net.TCPAddr).Port),
+		if maxMessageLength == -2 {
+			serverConnectionConfigs = &mashupsdk.MashupConnectionConfigs{
+				AuthToken: "c5376ccf9edc2a02499716c7e4f5599e8a96747e8a762c8ebed7a45074ad192a", // server token.
+				Port:      int64(lis.Addr().(*net.TCPAddr).Port),
+			}
+		} else {
+			serverConnectionConfigs = &mashupsdk.MashupConnectionConfigs{
+				AuthToken: mashupsdk.GenAuthToken(), // server token.
+				Port:      int64(lis.Addr().(*net.TCPAddr).Port),
+			}
 		}
 
 		client.SetServerConfigs(serverConnectionConfigs)
@@ -80,7 +162,8 @@ func InitServer(creds string, insecure bool, maxMessageLength int, mashupApiHand
 		mashupBlock, _ := pem.Decode([]byte(mashupCertBytes))
 		mashupClientCert, err := x509.ParseCertificate(mashupBlock.Bytes)
 		if err != nil {
-			log.Fatalf("failed to serve: %v", err)
+			log.Printf("failed to serve: %v", err)
+			return
 		}
 		mashupCertPool.AddCert(mashupClientCert)
 
@@ -90,9 +173,10 @@ func InitServer(creds string, insecure bool, maxMessageLength int, mashupApiHand
 			defaultDialOpt = grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(maxMessageLength), grpc.MaxCallSendMsgSize(maxMessageLength))
 		}
 		// Send credentials back to client....
-		conn, err := grpc.Dial("localhost:"+strconv.Itoa(int(handshakeConfigs.Port)), defaultDialOpt, grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{ServerName: "", RootCAs: mashupCertPool, InsecureSkipVerify: insecure})))
+		conn, err := grpc.Dial("localhost:"+port, defaultDialOpt, grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{ServerName: "", RootCAs: mashupCertPool, InsecureSkipVerify: insecure}))) //strconv.Itoa(int(handshakeConfigs.Port))
 		if err != nil {
-			log.Fatalf("did not connect: %v", err)
+			log.Printf("did not connect: %v", err)
+			return
 		}
 		mashupContext := &mashupsdk.MashupContext{Context: context.Background(), MashupGoodies: nil}
 
