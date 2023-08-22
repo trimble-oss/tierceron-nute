@@ -51,6 +51,21 @@ func (s *MashupServer) Shutdown(ctx context.Context, in *sdk.MashupEmpty) (*sdk.
 	return &sdk.MashupEmpty{}, nil
 }
 
+func (s *MashupServer) Handshake(ctx context.Context, in *sdk.MashupEmpty) (*sdk.MashupEmpty, error) {
+	log.Println("Handshake called")
+	if in.GetAuthToken() != serverConnectionConfigs.AuthToken {
+		return nil, errors.New("Auth failure")
+	}
+	go func() {
+		time.Sleep(100 * time.Millisecond)
+		os.Exit(-1)
+	}()
+	//Calls CollaborateInit --> Need to figure out how to access mashupContext
+	// mashupContext.Client.CollaborateInit(mashupContext.Context, serverConnectionConfigs)
+	log.Println("Handshake complete.")
+	return &sdk.MashupEmpty{}, nil
+}
+
 func (s *MashupServer) ResetStates(ctx context.Context, in *sdk.MashupEmpty) (*emptypb.Empty, error) {
 	log.Println("ResetStates called")
 	if in.GetAuthToken() != serverConnectionConfigs.AuthToken {
@@ -122,7 +137,11 @@ func (s *MashupServer) TweakStates(ctx context.Context, in *sdk.MashupElementSta
 
 func (s *MashupServer) SetHandler(mashupApiHandler mashupsdk.MashupApiHandler) {
 	log.Printf("SetHandler called")
-	s.mashupApiHandler = mashupApiHandler
+	// if s == nil {
+	// 	curr_server.mashupApiHandler = mashupApiHandler
+	// } else {
+	// 	s.mashupApiHandler = mashupApiHandler
+	// }
 }
 
 func SetServerConfigs(serverconfigs *sdk.MashupConnectionConfigs) {
