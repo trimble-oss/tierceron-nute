@@ -11,7 +11,6 @@ import (
 	"strconv"
 
 	"github.com/trimble-oss/tierceron-nute/mashupsdk"
-	// sdk "github.com/trimble-oss/tierceron-nute/mashupsdk"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
@@ -28,43 +27,40 @@ var maxMessage int
 var initHandler mashupsdk.MashupContextInitHandler
 var security bool
 
-// var certBytes []byte
-
-// var handshakeConnectionConfigs *mashupsdk.MashupConnectionConfigs
-
+// RemoteInitServer -- Bootstraps the initialization of the remote server with the location specified in creds paramater
 func RemoteInitServer(creds string, insecure bool, maxMessageLength int, mashupApiHandler mashupsdk.MashupApiHandler, mashupContextInitHandler mashupsdk.MashupContextInitHandler) {
-	//To Do:
-	// Set up credentials:
 	serverConfigs := &mashupsdk.MashupConnectionConfigs{}
 	maxMessage = maxMessageLength
 	initHandler = mashupContextInitHandler
 	security = insecure
 	err := json.Unmarshal([]byte(creds), serverConfigs)
 	if err != nil {
-		log.Fatalf("Malformed credentials: %s %v", creds, err)
+		log.Printf("Malformed credentials: %s %v", creds, err)
+		return
 	}
 	log.Printf("Startup with insecure: %t\n", insecure)
 
 	go func(mapiH mashupsdk.MashupApiHandler) {
 		mashupCertBytes, err := mashupsdk.MashupCert.ReadFile("tls/mashup.crt")
 		if err != nil {
-			log.Fatalf("Couldn't load cert: %v", err)
+			log.Printf("Couldn't load cert: %v", err)
+			return
 		}
-		// certBytes = mashupCertBytes
 
 		mashupKeyBytes, err := mashupsdk.MashupKey.ReadFile("tls/mashup.key")
 		if err != nil {
-			log.Fatalf("Couldn't load key: %v", err)
+			log.Printf("Couldn't load key: %v", err)
+			return
 		}
 
 		cert, err := tls.X509KeyPair(mashupCertBytes, mashupKeyBytes)
 		if err != nil {
-			log.Fatalf("Couldn't construct key pair: %v", err)
+			log.Printf("Couldn't construct key pair: %v", err)
+			return
 		}
 		creds := credentials.NewServerTLSFromCert(&cert)
-		// 1. Set up Remote server
-		var remote_server *grpc.Server
 
+		var remote_server *grpc.Server
 		if maxMessageLength > 0 {
 			remote_server = grpc.NewServer(grpc.MaxRecvMsgSize(maxMessageLength), grpc.MaxSendMsgSize(maxMessageLength), grpc.Creds(creds))
 		} else {
@@ -73,7 +69,8 @@ func RemoteInitServer(creds string, insecure bool, maxMessageLength int, mashupA
 
 		lis, err := net.Listen("tcp", serverConfigs.Server+":"+strconv.Itoa(int(serverConfigs.Port)))
 		if err != nil {
-			log.Fatalf("failed to serve: %v", err)
+			log.Printf("failed to serve: %v", err)
+			return
 		}
 
 		// Initialize the mashup server configuration and auth
@@ -83,8 +80,6 @@ func RemoteInitServer(creds string, insecure bool, maxMessageLength int, mashupA
 			Server:    serverConfigs.Server,
 			Port:      serverConfigs.Port,
 		}
-		log.Printf("Remote server listening on port: %v", serverConnectionConfigs.Port)
-		log.Printf("Remote server's authtoken: %v", serverConnectionConfigs.AuthToken)
 
 		go func(mH mashupsdk.MashupApiHandler) {
 			// Async service initiation.
@@ -94,12 +89,11 @@ func RemoteInitServer(creds string, insecure bool, maxMessageLength int, mashupA
 
 			log.Printf("My Starting service.\n")
 			if err := remote_server.Serve(lis); err != nil {
-				log.Fatalf("failed to serve: %v", err)
+				log.Printf("failed to serve: %v", err)
+				return
 			}
 		}(mapiH)
-
 		log.Printf("Handshake initiated.\n")
-
 	}(mashupApiHandler)
 }
 

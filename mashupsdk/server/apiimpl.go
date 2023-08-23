@@ -57,29 +57,25 @@ func (s *MashupServer) Shutdown(ctx context.Context, in *sdk.MashupEmpty) (*sdk.
 	return &sdk.MashupEmpty{}, nil
 }
 
+// CollaborateBootstrap -- Alerts server to existence of client and server calls to client to connect
 func (s *MashupServer) CollaborateBootstrap(ctx context.Context, in *sdk.MashupConnectionConfigs) (*sdk.MashupEmpty, error) {
 	log.Println("CollaborateBootstrap called")
 	if in.GetAuthToken() != serverConnectionConfigs.AuthToken {
-		return nil, errors.New("Auth failure")
+		return nil, errors.New("auth failure")
 	}
-	// go func() {
-	// 	time.Sleep(100 * time.Millisecond)
-	// 	os.Exit(-1)
-	// }()
-	//Calls CollaborateInit --> Need to figure out how to access mashupContext
-	// mashupContext.Client.CollaborateInit(mashupContext.Context, serverConnectionConfigs)
-	// Add check to see if already initialized with client
 	mashupCertBytes, err := mashupsdk.MashupCert.ReadFile("tls/mashup.crt")
 	if err != nil {
-		log.Fatalf("Couldn't load cert: %v", err)
+		log.Printf("Couldn't load cert: %v", err)
+		return nil, err
 	}
 	mashupCertPool := x509.NewCertPool()
 	mashupBlock, _ := pem.Decode([]byte(mashupCertBytes))
 	mashupClientCert, err := x509.ParseCertificate(mashupBlock.Bytes)
 	if err != nil {
-		log.Fatalf("failed to serve: %v", err)
+		log.Printf("failed to serve: %v", err)
+		return nil, err
 	}
-	mashupCertPool.AddCert(mashupClientCert) //Need to move this back to initserver --> for file location for mashupcertbytes
+	mashupCertPool.AddCert(mashupClientCert)
 
 	var defaultDialOpt grpc.DialOption = grpc.EmptyDialOption{}
 
@@ -89,7 +85,8 @@ func (s *MashupServer) CollaborateBootstrap(ctx context.Context, in *sdk.MashupC
 	// Send credentials back to client....
 	remote_conn, err := grpc.Dial(in.Server+":"+strconv.Itoa(int(in.Port)), defaultDialOpt, grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{ServerName: "", RootCAs: mashupCertPool, InsecureSkipVerify: security})))
 	if err != nil {
-		log.Fatalf("did not connect: %v", err)
+		log.Printf("did not connect: %v", err)
+		return nil, err
 	}
 
 	mashupContext := &mashupsdk.MashupContext{Context: context.Background(), MashupGoodies: nil}
@@ -101,7 +98,7 @@ func (s *MashupServer) CollaborateBootstrap(ctx context.Context, in *sdk.MashupC
 	clientConnectionConfigs, err = mashupContext.Client.CollaborateInit(mashupContext.Context, serverConnectionConfigs)
 	if err != nil {
 		log.Printf("handshake failure: %v\n", err)
-		panic(err)
+		return nil, err
 	}
 
 	log.Println("Handshake complete.")
