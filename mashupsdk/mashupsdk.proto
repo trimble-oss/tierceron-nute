@@ -20,7 +20,7 @@ service MashupServer {
   rpc ResetStates(MashupEmpty) returns (google.protobuf.Empty) {}
   rpc TweakStatesByMotiv(Motiv) returns (google.protobuf.Empty) {}
 
-  rpc Handshake(MashupEmpty) returns (MashupEmpty) {}
+  rpc CollaborateBootstrap(MashupConnectionConfigs) returns (MashupEmpty) {}
   rpc Shutdown(MashupEmpty) returns (MashupEmpty) {}
 }
 

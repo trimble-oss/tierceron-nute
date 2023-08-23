@@ -31,7 +31,7 @@ type MashupServerClient interface {
 	TweakStates(ctx context.Context, in *MashupElementStateBundle, opts ...grpc.CallOption) (*MashupElementStateBundle, error)
 	ResetStates(ctx context.Context, in *MashupEmpty, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	TweakStatesByMotiv(ctx context.Context, in *Motiv, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	Handshake(ctx context.Context, in *MashupEmpty, opts ...grpc.CallOption) (*MashupEmpty, error)
+	CollaborateBootstrap(ctx context.Context, in *MashupConnectionConfigs, opts ...grpc.CallOption) (*MashupEmpty, error)
 	Shutdown(ctx context.Context, in *MashupEmpty, opts ...grpc.CallOption) (*MashupEmpty, error)
 }
 
@@ -106,9 +106,9 @@ func (c *mashupServerClient) TweakStatesByMotiv(ctx context.Context, in *Motiv, 
 	return out, nil
 }
 
-func (c *mashupServerClient) Handshake(ctx context.Context, in *MashupEmpty, opts ...grpc.CallOption) (*MashupEmpty, error) {
+func (c *mashupServerClient) CollaborateBootstrap(ctx context.Context, in *MashupConnectionConfigs, opts ...grpc.CallOption) (*MashupEmpty, error) {
 	out := new(MashupEmpty)
-	err := c.cc.Invoke(ctx, "/mashupsdk.MashupServer/Handshake", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/mashupsdk.MashupServer/CollaborateBootstrap", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +136,7 @@ type MashupServerServer interface {
 	TweakStates(context.Context, *MashupElementStateBundle) (*MashupElementStateBundle, error)
 	ResetStates(context.Context, *MashupEmpty) (*emptypb.Empty, error)
 	TweakStatesByMotiv(context.Context, *Motiv) (*emptypb.Empty, error)
-	Handshake(context.Context, *MashupEmpty) (*MashupEmpty, error)
+	CollaborateBootstrap(context.Context, *MashupConnectionConfigs) (*MashupEmpty, error)
 	Shutdown(context.Context, *MashupEmpty) (*MashupEmpty, error)
 	mustEmbedUnimplementedMashupServerServer()
 }
@@ -166,8 +166,8 @@ func (UnimplementedMashupServerServer) ResetStates(context.Context, *MashupEmpty
 func (UnimplementedMashupServerServer) TweakStatesByMotiv(context.Context, *Motiv) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TweakStatesByMotiv not implemented")
 }
-func (UnimplementedMashupServerServer) Handshake(context.Context, *MashupEmpty) (*MashupEmpty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Handshake not implemented")
+func (UnimplementedMashupServerServer) CollaborateBootstrap(context.Context, *MashupConnectionConfigs) (*MashupEmpty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CollaborateBootstrap not implemented")
 }
 func (UnimplementedMashupServerServer) Shutdown(context.Context, *MashupEmpty) (*MashupEmpty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Shutdown not implemented")
@@ -311,20 +311,20 @@ func _MashupServer_TweakStatesByMotiv_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MashupServer_Handshake_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MashupEmpty)
+func _MashupServer_CollaborateBootstrap_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MashupConnectionConfigs)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MashupServerServer).Handshake(ctx, in)
+		return srv.(MashupServerServer).CollaborateBootstrap(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/mashupsdk.MashupServer/Handshake",
+		FullMethod: "/mashupsdk.MashupServer/CollaborateBootstrap",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MashupServerServer).Handshake(ctx, req.(*MashupEmpty))
+		return srv.(MashupServerServer).CollaborateBootstrap(ctx, req.(*MashupConnectionConfigs))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -383,8 +383,8 @@ var MashupServer_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MashupServer_TweakStatesByMotiv_Handler,
 		},
 		{
-			MethodName: "Handshake",
-			Handler:    _MashupServer_Handshake_Handler,
+			MethodName: "CollaborateBootstrap",
+			Handler:    _MashupServer_CollaborateBootstrap_Handler,
 		},
 		{
 			MethodName: "Shutdown",
