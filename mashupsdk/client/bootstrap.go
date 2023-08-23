@@ -274,7 +274,8 @@ func initContext(mashupApiHandler mashupsdk.MashupApiHandler,
 
 // For a remote server/client initialization, ensure envParams is of the format:
 // [remote server name, remote server port, client server name]
-// Also ensure params is of the format: ["remote", Remote server auth token]
+// Also for a remote server/client initialization,
+// ensure params is of the format: ["remote", Remote server auth token]
 func BootstrapInit(mashupPath string,
 	mashupApiHandler mashupsdk.MashupApiHandler,
 	envParams []string,
