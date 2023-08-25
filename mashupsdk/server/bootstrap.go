@@ -76,9 +76,10 @@ func RemoteInitServer(creds string, insecure bool, maxMessageLength int, mashupA
 		// Initialize the mashup server configuration and auth
 		// token.
 		serverConnectionConfigs = &mashupsdk.MashupConnectionConfigs{
-			AuthToken: serverConfigs.AuthToken, // server token.
-			Server:    serverConfigs.Server,
-			Port:      serverConfigs.Port,
+			AuthToken:   serverConfigs.AuthToken, // server token.
+			CallerToken: serverConfigs.AuthToken,
+			Server:      serverConfigs.Server,
+			Port:        serverConfigs.Port,
 		}
 
 		go func(mH mashupsdk.MashupApiHandler) {
@@ -133,7 +134,7 @@ func InitServer(creds string, insecure bool, maxMessageLength int, mashupApiHand
 			s = grpc.NewServer(grpc.Creds(creds))
 		}
 
-		lis, err := net.Listen("tcp", handshakeConfigs.Server+":0") //This could be localhost still?
+		lis, err := net.Listen("tcp", handshakeConfigs.Server+":0")
 		if err != nil {
 			log.Fatalf("failed to serve: %v", err)
 		}
