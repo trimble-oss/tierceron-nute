@@ -20,6 +20,7 @@ service MashupServer {
   rpc ResetStates(MashupEmpty) returns (google.protobuf.Empty) {}
   rpc TweakStatesByMotiv(Motiv) returns (google.protobuf.Empty) {}
 
+  rpc CollaborateBootstrap(MashupConnectionConfigs) returns (MashupEmpty) {}
   rpc Shutdown(MashupEmpty) returns (MashupEmpty) {}
 }
 
@@ -31,7 +32,8 @@ message MashupEmpty {
 message MashupConnectionConfigs {
   string authToken = 1;
   string callerToken = 2;
-  int64 port = 3;
+  string server = 3;
+  int64 port = 4;
 }
 
 // The query message with display position information.

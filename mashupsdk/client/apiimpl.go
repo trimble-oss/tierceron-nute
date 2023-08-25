@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/trimble-oss/tierceron-nute/mashupsdk"
-	sdk "github.com/trimble-oss/tierceron-nute/mashupsdk"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
@@ -20,7 +19,7 @@ import (
 var clientDialOptions grpc.DialOption = grpc.EmptyDialOption{}
 
 type MashupClient struct {
-	sdk.UnimplementedMashupServerServer
+	mashupsdk.UnimplementedMashupServerServer
 	mashupApiHandler mashupsdk.MashupApiHandler
 }
 
@@ -37,7 +36,7 @@ func GetServerAuthToken() string {
 }
 
 // Shutdown -- handles request to shut down the mashup.
-func (s *MashupClient) Shutdown(ctx context.Context, in *sdk.MashupEmpty) (*sdk.MashupEmpty, error) {
+func (s *MashupClient) Shutdown(ctx context.Context, in *mashupsdk.MashupEmpty) (*mashupsdk.MashupEmpty, error) {
 	log.Println("Shutdown called")
 	if in.GetAuthToken() != serverConnectionConfigs.AuthToken {
 		return nil, errors.New("Auth failure")
@@ -48,28 +47,31 @@ func (s *MashupClient) Shutdown(ctx context.Context, in *sdk.MashupEmpty) (*sdk.
 	}()
 
 	log.Println("Shutdown initiated.")
-	return &sdk.MashupEmpty{}, nil
+	return &mashupsdk.MashupEmpty{}, nil
 }
 
 // CollaborateInit - Implementation of the handshake.  During the callback from
 // the mashup, construct new more permanent set of credentials to be shared.
-func (c *MashupClient) CollaborateInit(ctx context.Context, in *sdk.MashupConnectionConfigs) (*sdk.MashupConnectionConfigs, error) {
+func (c *MashupClient) CollaborateInit(ctx context.Context, in *mashupsdk.MashupConnectionConfigs) (*mashupsdk.MashupConnectionConfigs, error) {
 	log.Printf("CollaborateInit called")
 	if in.GetAuthToken() != handshakeConnectionConfigs.AuthToken {
-		return nil, errors.New("Auth failure")
+		return nil, errors.New("auth failure")
 	}
-	serverConnectionConfigs = &sdk.MashupConnectionConfigs{
+	serverConnectionConfigs = &mashupsdk.MashupConnectionConfigs{
 		AuthToken: in.CallerToken,
+		Server:    in.Server,
 		Port:      in.Port,
 	}
 
 	if mashupCertBytes == nil {
-		log.Fatalf("Cert not initialized.")
+		log.Printf("Cert not initialized.")
+		return nil, errors.New("cert initialization failure")
 	}
 	mashupBlock, _ := pem.Decode([]byte(mashupCertBytes))
 	mashupClientCert, err := x509.ParseCertificate(mashupBlock.Bytes)
 	if err != nil {
-		log.Fatalf("failed to serve: %v", err)
+		log.Printf("failed to serve: %v", err)
+		return nil, err
 	}
 
 	// Connect to the server for purposes of mashup api calls.
@@ -78,9 +80,10 @@ func (c *MashupClient) CollaborateInit(ctx context.Context, in *sdk.MashupConnec
 
 	log.Printf("Initiating connection to server with insecure: %t\n", *insecure)
 	// Connect to it.
-	conn, err := grpc.Dial("localhost:"+strconv.Itoa(int(serverConnectionConfigs.Port)), clientDialOptions, grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{ServerName: "", RootCAs: mashupCertPool, InsecureSkipVerify: *insecure})))
+	conn, err := grpc.Dial(serverConnectionConfigs.Server+":"+strconv.Itoa(int(serverConnectionConfigs.Port)), clientDialOptions, grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{ServerName: "", RootCAs: mashupCertPool, InsecureSkipVerify: *insecure})))
 	if err != nil {
-		log.Fatalf("did not connect: %v", err)
+		log.Printf("did not connect: %v", err)
+		return nil, err
 	}
 	log.Printf("Connection to server established.\n")
 
@@ -89,7 +92,7 @@ func (c *MashupClient) CollaborateInit(ctx context.Context, in *sdk.MashupConnec
 	// 1. If current application shuts down, mashup
 	// will also be told to shut down through Shutdown() api
 	// call before this app exits.
-	mashupContext.Client = sdk.NewMashupServerClient(conn)
+	mashupContext.Client = mashupsdk.NewMashupServerClient(conn)
 	log.Printf("Initiate signal handler.\n")
 
 	initSignalProcessor(mashupContext)
@@ -99,8 +102,9 @@ func (c *MashupClient) CollaborateInit(ctx context.Context, in *sdk.MashupConnec
 		handshakeCompleteChan <- true
 	}()
 
-	clientConnectionConfigs = &sdk.MashupConnectionConfigs{
-		AuthToken: sdk.GenAuthToken(), // client token.
+	clientConnectionConfigs = &mashupsdk.MashupConnectionConfigs{
+		AuthToken: mashupsdk.GenAuthToken(), // client token.
+		Server:    handshakeConnectionConfigs.Server,
 		Port:      handshakeConnectionConfigs.Port,
 	}
 	log.Printf("CollaborateInit complete.\n")
@@ -109,7 +113,7 @@ func (c *MashupClient) CollaborateInit(ctx context.Context, in *sdk.MashupConnec
 }
 
 // Shutdown -- handles request to shut down the mashup.
-func (c *MashupClient) GetElements(ctx context.Context, in *sdk.MashupEmpty) (*sdk.MashupDetailedElementBundle, error) {
+func (c *MashupClient) GetElements(ctx context.Context, in *mashupsdk.MashupEmpty) (*mashupsdk.MashupDetailedElementBundle, error) {
 	log.Printf("GetElements called")
 	if in.GetAuthToken() != serverConnectionConfigs.AuthToken {
 		return nil, errors.New("Auth failure")
@@ -123,7 +127,7 @@ func (c *MashupClient) GetElements(ctx context.Context, in *sdk.MashupEmpty) (*s
 	return nil, nil
 }
 
-func (c *MashupClient) TweakStates(ctx context.Context, in *sdk.MashupElementStateBundle) (*sdk.MashupElementStateBundle, error) {
+func (c *MashupClient) TweakStates(ctx context.Context, in *mashupsdk.MashupElementStateBundle) (*mashupsdk.MashupElementStateBundle, error) {
 	log.Printf("TweakStates called")
 	if in.GetAuthToken() != serverConnectionConfigs.AuthToken {
 		log.Printf("Auth failure.")
@@ -138,7 +142,7 @@ func (c *MashupClient) TweakStates(ctx context.Context, in *sdk.MashupElementSta
 	return nil, nil
 }
 
-func (c *MashupClient) UpsertElements(ctx context.Context, in *sdk.MashupDetailedElementBundle) (*sdk.MashupDetailedElementBundle, error) {
+func (c *MashupClient) UpsertElements(ctx context.Context, in *mashupsdk.MashupDetailedElementBundle) (*mashupsdk.MashupDetailedElementBundle, error) {
 	log.Printf("UpsertElements called")
 	if in.GetAuthToken() != serverConnectionConfigs.AuthToken {
 		return nil, errors.New("Auth failure")
@@ -152,7 +156,7 @@ func (c *MashupClient) UpsertElements(ctx context.Context, in *sdk.MashupDetaile
 	return nil, nil
 }
 
-func (c *MashupClient) OnDisplayChange(ctx context.Context, in *sdk.MashupDisplayBundle) (*sdk.MashupDisplayHint, error) {
+func (c *MashupClient) OnDisplayChange(ctx context.Context, in *mashupsdk.MashupDisplayBundle) (*mashupsdk.MashupDisplayHint, error) {
 	log.Printf("OnDisplayChange called")
 	if in.GetAuthToken() != serverConnectionConfigs.AuthToken {
 		log.Printf("OnDisplayChange auth failure.")
