@@ -65,6 +65,110 @@ func forkMashup(mashupGoodies map[string]interface{}) error {
 	return forkErr
 }
 
+// Initializes a client to a server without a handshake, so the client's handler cannot be referenced by the server directly
+func flumeInitContext(mashupApiHandler mashupsdk.MashupApiHandler, mashupGoodies map[string]interface{}) *mashupsdk.MashupContext {
+	log.Printf("Initializing Flume Mashup. \n")
+	var err error
+	mashupContext = &mashupsdk.MashupContext{Context: context.Background(), MashupGoodies: mashupGoodies}
+	insecure = mashupGoodies["tls-skip-validation"].(*bool)
+	var maxMessageLength int = -1
+	if mml, mmlOk := mashupGoodies["maxMessageLength"].(int); mmlOk {
+		maxMessageLength = mml
+	}
+
+	flume_server := ""
+	chat_server := ""
+	port := 0
+	if env, envOk := mashupGoodies["ENV"].([]string); envOk {
+		if len(env) > 2 {
+			chat_server = env[0]
+			port, err = strconv.Atoi(env[1])
+			if err != nil {
+				log.Printf("Failed to convert port: %v", err)
+			}
+			flume_server = env[2]
+		} else {
+			log.Printf("Invalid environment specified for remote server. Make sure the environment parameter is in the following order: [remote server name, remote server port, client server name]")
+			return nil
+		}
+	} else {
+		log.Printf("Client server name not specified")
+		return nil
+	}
+
+	auth_token := ""
+	if params, paramsOk := mashupGoodies["PARAMS"].([]string); paramsOk {
+		if len(params) > 1 {
+			auth_token = params[1]
+		} else {
+			log.Printf("No auth token provided by client")
+			return nil
+		}
+	} else {
+		log.Printf("No auth token provided by client")
+		return nil
+	}
+	clientConnectionConfigs = &mashupsdk.MashupConnectionConfigs{
+		AuthToken: auth_token,
+	}
+
+	mashupCertBytes, err := mashupsdk.MashupCert.ReadFile("tls/mashup.crt")
+	if err != nil {
+		log.Printf("Couldn't load cert: %v", err)
+		return nil
+	}
+
+	mashupKeyBytes, err := mashupsdk.MashupKey.ReadFile("tls/mashup.key")
+	if err != nil {
+		log.Printf("Couldn't load key: %v", err)
+		return nil
+	}
+
+	serverCert, err := tls.X509KeyPair(mashupCertBytes, mashupKeyBytes)
+	if err != nil {
+		log.Printf("failed to serve: %v", err)
+		return nil
+	}
+	creds := credentials.NewServerTLSFromCert(&serverCert)
+
+	var flumeServer *grpc.Server
+	if maxMessageLength > 0 {
+		flumeServer = grpc.NewServer(grpc.MaxRecvMsgSize(maxMessageLength), grpc.MaxSendMsgSize(maxMessageLength), grpc.Creds(creds))
+	} else {
+		flumeServer = grpc.NewServer(grpc.Creds(creds))
+	}
+	lis, err := net.Listen("tcp", flume_server+":0")
+	if err != nil {
+		log.Printf("Failed to serve: %v", err)
+		return nil
+	}
+
+	go func(handler mashupsdk.MashupApiHandler) {
+		if maxMessageLength > 0 {
+			InitDialOptions(grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(maxMessageLength), grpc.MaxCallSendMsgSize(maxMessageLength)))
+		}
+		mashupsdk.RegisterMashupServerServer(flumeServer, &MashupClient{mashupApiHandler: handler})
+		flumeServer.Serve(lis)
+	}(mashupApiHandler)
+
+	mashupCertPool := x509.NewCertPool()
+	mashupBlock, _ := pem.Decode([]byte(mashupCertBytes))
+	mashupClientCert, err := x509.ParseCertificate(mashupBlock.Bytes)
+	if err != nil {
+		log.Printf("failed to serve: %v", err)
+	}
+	mashupCertPool.AddCert(mashupClientCert)
+	conn, err := grpc.Dial(chat_server+":"+strconv.Itoa(int(port)), grpc.EmptyDialOption{}, grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{ServerName: "", RootCAs: mashupCertPool, InsecureSkipVerify: *insecure})))
+	if err != nil {
+		log.Printf("did not connect: %v", err)
+		return nil
+	}
+	c := mashupsdk.NewMashupServerClient(conn)
+
+	mashupCtx := &mashupsdk.MashupContext{Context: context.Background(), Client: c}
+	return mashupCtx
+}
+
 // remoteInitContext -- Initializes client with provided client and remote server addresses and auth token from mashupGoodies
 // Returns the mashupContext associated with this client
 func remoteInitContext(mashupApiHandler mashupsdk.MashupApiHandler,
@@ -275,7 +379,9 @@ func initContext(mashupApiHandler mashupsdk.MashupApiHandler,
 // For a remote server/client initialization, ensure envParams is of the format:
 // [remote server name, remote server port, client server name]
 // Also for a remote server/client initialization,
-// ensure params is of the format: ["remote", Remote server auth token]
+// ensure params is of the format: ["remote", Remote Server Auth Token]
+// For client initialization where the server does not know the client's address,
+// ensure params if of the form: ["flume", Server Auth Token]
 func BootstrapInit(mashupPath string,
 	mashupApiHandler mashupsdk.MashupApiHandler,
 	envParams []string,
@@ -301,9 +407,13 @@ func BootstrapInitWithMessageExt(mashupPath string,
 	}
 	mashupGoodies["ENV"] = envParams
 	remote := false
+	flume := false
 	if len(params) > 1 {
 		if params[0] == "remote" {
 			remote = true
+		}
+		if params[0] == "flume" {
+			flume = true
 		}
 	}
 	mashupGoodies["PARAMS"] = params
@@ -311,6 +421,8 @@ func BootstrapInitWithMessageExt(mashupPath string,
 	mashupGoodies["maxMessageLength"] = maxMessageLength
 	if remote {
 		return remoteInitContext(mashupApiHandler, mashupGoodies)
+	} else if flume {
+		return flumeInitContext(mashupApiHandler, mashupGoodies)
 	} else {
 		return initContext(mashupApiHandler, mashupGoodies)
 	}
