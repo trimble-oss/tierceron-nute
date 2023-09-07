@@ -65,7 +65,7 @@ func forkMashup(mashupGoodies map[string]interface{}) error {
 	return forkErr
 }
 
-func commonRemoteInitContext(mashupApiHandler mashupsdk.MashupApiHandler,
+func remoteInitContext(mashupApiHandler mashupsdk.MashupApiHandler,
 	mashupGoodies map[string]interface{}, flume bool) *mashupsdk.MashupContext {
 	log.Printf("Initializing Remote Mashup. \n")
 	handshakeCompleteChan = make(chan bool)
@@ -88,11 +88,13 @@ func commonRemoteInitContext(mashupApiHandler mashupsdk.MashupApiHandler,
 			server_port, err = strconv.Atoi(env[1])
 			if err != nil {
 				log.Printf("Failed to convert server port: %v", err)
+				return nil
 			}
 			client_name = env[2]
 			client_port, err = strconv.Atoi(env[3])
 			if err != nil {
 				log.Printf("Failed to convert client port: %v", err)
+				return nil
 			}
 		} else {
 			log.Printf("Invalid environment specified for remote server. Make sure the environment parameter is in the following order: [remote server name, remote server port, client server name]")
