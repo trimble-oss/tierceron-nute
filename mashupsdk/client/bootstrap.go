@@ -65,6 +65,10 @@ func forkMashup(mashupGoodies map[string]interface{}) error {
 	return forkErr
 }
 
+// Connects to specified remote server
+// If flume is true, will keep client address hidden from server
+// otherwise, will collaborate with server so both server and client
+// can upsert elements
 func remoteInitContext(mashupApiHandler mashupsdk.MashupApiHandler,
 	mashupGoodies map[string]interface{}, flume bool) *mashupsdk.MashupContext {
 	log.Printf("Initializing Remote Mashup. \n")
@@ -328,7 +332,7 @@ func BootstrapInitWithMessageExt(mashupPath string,
 	mashupGoodies["tls-skip-validation"] = insecure
 	mashupGoodies["maxMessageLength"] = maxMessageLength
 	if remote || flume {
-		return commonRemoteInitContext(mashupApiHandler, mashupGoodies, flume)
+		return remoteInitContext(mashupApiHandler, mashupGoodies, flume)
 	} else {
 		return initContext(mashupApiHandler, mashupGoodies)
 	}
