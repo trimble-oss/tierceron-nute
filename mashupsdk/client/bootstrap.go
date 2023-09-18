@@ -13,6 +13,7 @@ import (
 	"net"
 	"os/exec"
 	"strconv"
+	"strings"
 	"syscall"
 
 	"github.com/trimble-oss/tierceron-nute/mashupsdk"
@@ -211,8 +212,10 @@ func initContext(mashupApiHandler mashupsdk.MashupApiHandler,
 	// If no server name is specified, defaults to localhost
 	var local_server string
 	if env_params, envOk := mashupGoodies["ENV"].([]string); envOk {
-		if len(env_params) > 0 {
+		if len(env_params) > 0 && !strings.Contains(env_params[0], "=") {
 			local_server = env_params[0]
+		} else {
+			local_server = "localhost"
 		}
 	} else {
 		local_server = "localhost"
