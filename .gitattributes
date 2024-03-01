@@ -1,0 +1,4 @@
+*.png diff=exif
+.* export-ignore
+Makefile export-ignore
+*.mp4 export-ignore
