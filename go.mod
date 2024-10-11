@@ -46,7 +46,7 @@ require (
 require (
 	fyne.io/fyne/v2 v2.1.3
 	golang.org/x/exp v0.0.0-20210722180016-6781d3edade3 // indirect
-	golang.org/x/image v0.10.0 // indirect
+	golang.org/x/image v0.0.0-20220601225756-64ec528b34cd // indirect
 	golang.org/x/sys v0.18.0 // indirect
 )
 
