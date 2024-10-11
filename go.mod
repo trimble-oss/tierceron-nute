@@ -36,7 +36,7 @@ require (
 	github.com/tevino/abool v1.2.0 // indirect
 	github.com/yuin/goldmark v1.4.13 // indirect
 	//golang.org/x/net v0.0.0-20220708220712-1185a9018129 // indirect
-	golang.org/x/text v0.14.0 // indirect
+	golang.org/x/text v0.19.0 // indirect
 	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
@@ -46,7 +46,7 @@ require (
 require (
 	fyne.io/fyne/v2 v2.1.3
 	golang.org/x/exp v0.0.0-20210722180016-6781d3edade3 // indirect
-	golang.org/x/image v0.0.0-20220601225756-64ec528b34cd // indirect
+	golang.org/x/image v0.21.0 // indirect
 	golang.org/x/sys v0.18.0 // indirect
 )
 
