@@ -10,6 +10,8 @@ require (
 	google.golang.org/protobuf v1.35.1
 )
 
+require golang.org/x/exp/shiny v0.0.0-20230202163644-54bba9f4231b // indirect
+
 require (
 	fyne.io/systray v1.10.1-0.20220621085403-9a2652634e93 // indirect
 	gioui.org/cpu v0.0.0-20210817075930-8d6a761490d2 // indirect
@@ -32,7 +34,7 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/srwiley/oksvg v0.0.0-20200311192757-870daf9aa564 // indirect
 	github.com/srwiley/rasterx v0.0.0-20200120212402-85cb7272f5e9 // indirect
-	github.com/stretchr/testify v1.7.2 // indirect
+	github.com/stretchr/testify v1.9.0 // indirect
 	github.com/tevino/abool v1.2.0 // indirect
 	github.com/yuin/goldmark v1.4.13 // indirect
 	//golang.org/x/net v0.0.0-20220708220712-1185a9018129 // indirect
