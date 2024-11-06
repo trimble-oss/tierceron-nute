@@ -1,13 +1,13 @@
 module github.com/trimble-oss/tierceron-nute
 
-go 1.20
+go 1.23.2
 
 require (
 	gioui.org v0.0.0-20220318070519-8833a6738a3b
 	github.com/g3n/engine v0.2.0
 	golang.org/x/mobile v0.0.0-20220307220422-55113b94f09c
-	google.golang.org/grpc v1.64.0
-	google.golang.org/protobuf v1.33.0
+	google.golang.org/grpc v1.67.1
+	google.golang.org/protobuf v1.35.1
 )
 
 require (
@@ -47,7 +47,7 @@ require (
 	fyne.io/fyne/v2 v2.1.3
 	golang.org/x/exp v0.0.0-20210722180016-6781d3edade3 // indirect
 	golang.org/x/image v0.21.0 // indirect
-	golang.org/x/sys v0.18.0 // indirect
+	golang.org/x/sys v0.26.0 // indirect
 )
 
 //require github.com/go-gl/glfw/v3.3.2/glfw v0.0.0-20211213063430-748e38ca8aec
@@ -55,7 +55,7 @@ require (
 require (
 	github.com/faiface/mainthread v0.0.0-20171120011319-8b78f0a41ae3
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20221017161538-93cebf72946b
-	golang.org/x/net v0.22.0 // indirect
+	golang.org/x/net v0.30.0 // indirect
 )
 
 // Uncomment for local development
