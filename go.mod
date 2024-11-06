@@ -10,6 +10,8 @@ require (
 	google.golang.org/protobuf v1.35.1
 )
 
+require golang.org/x/exp/shiny v0.0.0-20230202163644-54bba9f4231b // indirect
+
 require (
 	fyne.io/systray v1.10.1-0.20220621085403-9a2652634e93 // indirect
 	gioui.org/cpu v0.0.0-20210817075930-8d6a761490d2 // indirect
