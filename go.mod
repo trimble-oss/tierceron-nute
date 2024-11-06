@@ -3,19 +3,19 @@ module github.com/trimble-oss/tierceron-nute
 go 1.23.2
 
 require (
-	gioui.org v0.0.0-20220318070519-8833a6738a3b
+	gioui.org v0.7.1
 	github.com/g3n/engine v0.2.0
-	golang.org/x/mobile v0.0.0-20220307220422-55113b94f09c
+	golang.org/x/mobile v0.0.0-20231127183840-76ac6878050a
 	google.golang.org/grpc v1.67.1
 	google.golang.org/protobuf v1.35.1
 )
 
-require golang.org/x/exp/shiny v0.0.0-20230202163644-54bba9f4231b // indirect
+require golang.org/x/exp/shiny v0.0.0-20240707233637-46b078467d37 // indirect
 
 require (
 	fyne.io/systray v1.10.1-0.20220621085403-9a2652634e93 // indirect
 	gioui.org/cpu v0.0.0-20210817075930-8d6a761490d2 // indirect
-	gioui.org/shader v1.0.6 // indirect
+	gioui.org/shader v1.0.8 // indirect
 	github.com/benoitkugler/textlayout v0.0.10 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fredbi/uri v0.0.0-20181227131451-3dcfdacbaaf3 // indirect
@@ -25,7 +25,7 @@ require (
 	github.com/fyne-io/image v0.0.0-20220602074514-4956b0afb3d2 // indirect
 	github.com/gioui/uax v0.2.1-0.20220325163150-e3d987515a12 // indirect
 	github.com/go-gl/gl v0.0.0-20211210172815-726fda9656d6 // indirect
-	github.com/go-text/typesetting v0.0.0-20220112121102-58fe93c84506 // indirect
+	github.com/go-text/typesetting v0.1.1 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/goki/freetype v0.0.0-20181231101311-fa8a33aabaff // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
@@ -47,7 +47,7 @@ require (
 
 require (
 	fyne.io/fyne/v2 v2.1.3
-	golang.org/x/exp v0.0.0-20210722180016-6781d3edade3 // indirect
+	golang.org/x/exp v0.0.0-20240707233637-46b078467d37 // indirect
 	golang.org/x/image v0.21.0 // indirect
 	golang.org/x/sys v0.26.0 // indirect
 )
@@ -56,7 +56,7 @@ require (
 
 require (
 	github.com/faiface/mainthread v0.0.0-20171120011319-8b78f0a41ae3
-	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20221017161538-93cebf72946b
+	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20231223183121-56fa3ac82ce7
 	golang.org/x/net v0.30.0 // indirect
 )
 
