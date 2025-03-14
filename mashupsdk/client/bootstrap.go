@@ -123,19 +123,7 @@ func remoteInitContext(mashupApiHandler mashupsdk.MashupApiHandler,
 		return nil
 	}
 
-	mashupCertBytes, err = mashupsdk.MashupCert.ReadFile("tls/mashup.crt")
-	if err != nil {
-		log.Printf("Couldn't load cert: %v", err)
-		return nil
-	}
-
-	mashupKeyBytes, err := mashupsdk.MashupKey.ReadFile("tls/mashup.key")
-	if err != nil {
-		log.Printf("Couldn't load key: %v", err)
-		return nil
-	}
-
-	serverCert, err := tls.X509KeyPair(mashupCertBytes, mashupKeyBytes)
+	serverCert, err := tls.X509KeyPair(mashupsdk.MashupCertBytes, mashupsdk.MashupKeyBytes)
 	if err != nil {
 		log.Printf("failed to serve: %v", err)
 		return nil
@@ -222,17 +210,7 @@ func initContext(mashupApiHandler mashupsdk.MashupApiHandler,
 	}
 
 	// Initialize local server.
-	mashupCertBytes, err = mashupsdk.MashupCert.ReadFile("tls/mashup.crt")
-	if err != nil {
-		log.Fatalf("Couldn't load cert: %v", err)
-	}
-
-	mashupKeyBytes, err := mashupsdk.MashupKey.ReadFile("tls/mashup.key")
-	if err != nil {
-		log.Fatalf("Couldn't load key: %v", err)
-	}
-
-	serverCert, err := tls.X509KeyPair(mashupCertBytes, mashupKeyBytes)
+	serverCert, err := tls.X509KeyPair(mashupsdk.MashupCertBytes, mashupsdk.MashupKeyBytes)
 	if err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}

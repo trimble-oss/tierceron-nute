@@ -50,6 +50,7 @@ func (s *MashupServer) Shutdown(ctx context.Context, in *sdk.MashupEmpty) (*sdk.
 	}
 	go func() {
 		time.Sleep(100 * time.Millisecond)
+		log.Printf("Server shutting down.")
 		os.Exit(-1)
 	}()
 
@@ -63,13 +64,8 @@ func (s *MashupServer) CollaborateBootstrap(ctx context.Context, in *sdk.MashupC
 	if in.GetAuthToken() != serverConnectionConfigs.AuthToken {
 		return nil, errors.New("auth failure")
 	}
-	mashupCertBytes, err := mashupsdk.MashupCert.ReadFile("tls/mashup.crt")
-	if err != nil {
-		log.Printf("Couldn't load cert: %v", err)
-		return nil, err
-	}
 	mashupCertPool := x509.NewCertPool()
-	mashupBlock, _ := pem.Decode([]byte(mashupCertBytes))
+	mashupBlock, _ := pem.Decode([]byte(mashupsdk.MashupCertBytes))
 	mashupClientCert, err := x509.ParseCertificate(mashupBlock.Bytes)
 	if err != nil {
 		log.Printf("failed to serve: %v", err)
@@ -134,7 +130,8 @@ func (s *MashupServer) OnDisplayChange(ctx context.Context, in *sdk.MashupDispla
 		s.mashupApiHandler.OnDisplayChange(displayHint)
 	}
 
-	return nil, nil
+	log.Printf("Finished OnDisplayChange")
+	return displayHint, nil
 }
 
 func (s *MashupServer) GetElements(ctx context.Context, in *sdk.MashupEmpty) (*sdk.MashupDetailedElementBundle, error) {
@@ -185,4 +182,19 @@ func (s *MashupServer) SetHandler(mashupApiHandler mashupsdk.MashupApiHandler) {
 
 func SetServerConfigs(serverconfigs *sdk.MashupConnectionConfigs) {
 	serverConnectionConfigs = serverconfigs
+}
+
+func (c *MashupServer) TweakStatesByMotiv(ctx context.Context, in *mashupsdk.Motiv) (*emptypb.Empty, error) {
+	log.Printf("TweakStatesByMotiv called")
+	if in.GetAuthToken() != serverConnectionConfigs.AuthToken {
+		log.Printf("Auth failure.")
+		return nil, errors.New("Auth failure")
+	}
+	if c.mashupApiHandler != nil {
+		log.Printf("TweakStatesByMotiv Delegate to api handler.")
+		return c.mashupApiHandler.TweakStatesByMotiv(in)
+	} else {
+		log.Printf("TweakStatesByMotiv No api handler provided.")
+	}
+	return nil, nil
 }
