@@ -12,6 +12,7 @@ import (
 	"github.com/trimble-oss/tierceron-nute/mashupsdk"
 	"github.com/trimble-oss/tierceron-nute/mashupsdk/client"
 	"github.com/trimble-oss/tierceron-nute/mashupsdk/guiboot"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	"gioui.org/app"
 	"gioui.org/font/gofont"
