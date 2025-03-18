@@ -10,7 +10,8 @@ Build common components:
 make mashupsdk
 
 Install g3n support libraries:
-sudo apt-get install xorg-dev libgl1-mesa-dev libopenal1 libopenal-dev libvorbis0a libvorbis-dev libvorbisfile3
+sudo apt-get install xorg-dev libgl1-mesa-dev libopenal1 libopenal-dev libvorbis0a libvorbis-dev libvorbisfile3 libxkbcommon-x11-dev libx11-xcb-dev
+
 
 Generate self signed certs:
 cd ./mashupsdk/tls/
