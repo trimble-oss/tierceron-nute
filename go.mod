@@ -25,7 +25,7 @@ require (
 )
 
 require (
-	gioui.org/cpu v0.0.0-20210817075930-8d6a761490d2 // indirect
+	gioui.org/cpu v0.0.0-20220412190645-f1e9e8c3b1f7 // indirect
 	github.com/BurntSushi/toml v1.4.0 // indirect
 	github.com/benoitkugler/textlayout v0.0.5 // indirect
 	github.com/jeandeaual/go-locale v0.0.0-20240223122105-ce5225dcaa49 // indirect
