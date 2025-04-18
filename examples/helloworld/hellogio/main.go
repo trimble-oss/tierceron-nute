@@ -9,7 +9,7 @@ import (
 
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
-	"github.com/trimble-oss/tierceron-nute/mashupsdk"
+	"github.com/trimble-oss/tierceron-nute-core/mashupsdk"
 	"github.com/trimble-oss/tierceron-nute/mashupsdk/client"
 	"github.com/trimble-oss/tierceron-nute/mashupsdk/guiboot"
 	"google.golang.org/protobuf/types/known/emptypb"

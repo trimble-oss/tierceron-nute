@@ -11,8 +11,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/trimble-oss/tierceron-nute/mashupsdk"
-	sdk "github.com/trimble-oss/tierceron-nute/mashupsdk"
+	"github.com/trimble-oss/tierceron-nute-core/mashupsdk"
+	sdk "github.com/trimble-oss/tierceron-nute-core/mashupsdk"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"

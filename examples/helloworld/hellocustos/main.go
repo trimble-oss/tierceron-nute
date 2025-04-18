@@ -16,9 +16,9 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
+	"github.com/trimble-oss/tierceron-nute-core/mashupsdk"
 	"github.com/trimble-oss/tierceron-nute/custos/custosworld"
 	"github.com/trimble-oss/tierceron-nute/g3nd/data"
-	"github.com/trimble-oss/tierceron-nute/mashupsdk"
 )
 
 var worldCompleteChan chan bool

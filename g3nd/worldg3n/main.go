@@ -10,11 +10,11 @@ import (
 	"log"
 	"os"
 
+	"github.com/trimble-oss/tierceron-nute-core/mashupsdk"
 	"github.com/trimble-oss/tierceron-nute/g3nd/data"
 	"github.com/trimble-oss/tierceron-nute/g3nd/g3nworld"
 	g3ndpalette "github.com/trimble-oss/tierceron-nute/g3nd/palette"
 	"github.com/trimble-oss/tierceron-nute/g3nd/worldg3n/g3nrender"
-	"github.com/trimble-oss/tierceron-nute/mashupsdk"
 	"github.com/trimble-oss/tierceron-nute/mashupsdk/client"
 )
 

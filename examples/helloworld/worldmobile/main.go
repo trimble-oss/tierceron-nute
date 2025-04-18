@@ -11,8 +11,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/trimble-oss/tierceron-nute/mashupsdk"
-	sdk "github.com/trimble-oss/tierceron-nute/mashupsdk"
+	"github.com/trimble-oss/tierceron-nute-core/mashupsdk"
+	sdk "github.com/trimble-oss/tierceron-nute-core/mashupsdk"
 	"github.com/trimble-oss/tierceron-nute/mashupsdk/guiboot"
 	"github.com/trimble-oss/tierceron-nute/mashupsdk/server"
 	"golang.org/x/mobile/app"
