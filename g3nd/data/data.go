@@ -1,6 +1,6 @@
 package data
 
-import "github.com/trimble-oss/tierceron-nute/mashupsdk"
+import "github.com/trimble-oss/tierceron-nute-core/mashupsdk"
 
 func GetExampleLibrary() []*mashupsdk.MashupDetailedElement {
 	return []*mashupsdk.MashupDetailedElement{
