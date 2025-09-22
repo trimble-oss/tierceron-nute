@@ -1,3 +1,6 @@
+//go:build darwin
+// +build darwin
+
 package main
 
 import (
@@ -29,8 +32,7 @@ import (
 type HelloContext struct {
 	mashupContext *mashupsdk.MashupContext // Needed for callbacks to other mashups
 }
-type gioMashupApiHandler struct {
-}
+type gioMashupApiHandler struct{}
 
 type GioWidgetBundle struct {
 	mashupsdk.GuiWidgetBundle
@@ -43,7 +45,6 @@ type HelloApp struct {
 	mashupDisplayContext *mashupsdk.MashupDisplayContext
 	gioWidgetElements    []*GioWidgetBundle
 	gioComponentCache    map[int64]*GioWidgetBundle // g3n indexes by string...
-
 }
 
 var helloApp HelloApp
@@ -76,7 +77,7 @@ func main() {
 	insecure := flag.Bool("tls-skip-validation", false, "Skip server validation")
 	flag.Parse()
 
-	helloLog, err := os.OpenFile("hellogio.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	helloLog, err := os.OpenFile("hellogio.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o666)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -200,7 +201,6 @@ func main() {
 			log.Printf("Element state initialization failure: %s\n", upsertErr.Error())
 		}
 		log.Printf("Mashup elements delivered.\n")
-
 	}()
 
 	// Sync initialization.
@@ -247,14 +247,14 @@ func main() {
 				// display := e.Display
 
 			case system.StageEvent:
-				//stage := e.Stage
+				// stage := e.Stage
 
 			case key.FocusEvent:
-				//fe := e.Focus
+				// fe := e.Focus
 
 			case pointer.Event:
 				// Position of like a cursor.
-				//pos := e.Position
+				// pos := e.Position
 
 			case system.DestroyEvent:
 				helloApp.HelloContext.mashupContext.Client.Shutdown(helloApp.HelloContext.mashupContext, &mashupsdk.MashupEmpty{AuthToken: client.GetServerAuthToken()})

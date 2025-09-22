@@ -1,18 +1,18 @@
 module github.com/trimble-oss/tierceron-nute
 
-go 1.23.2
+go 1.25.1
 
 require (
 	gioui.org v0.0.0-20220318070519-8833a6738a3b
 	github.com/ftbe/dawg v0.0.0-20131228112149-aadae8139481
 	github.com/g3n/engine v0.2.0
 	github.com/trimble-oss/tierceron-nute-core v1.0.3
-	golang.org/x/mobile v0.0.0-20231127183840-76ac6878050a
+	golang.org/x/mobile v0.0.0-20250911085028-6912353760cf
 	google.golang.org/grpc v1.72.0
 	google.golang.org/protobuf v1.36.6
 )
 
-require golang.org/x/exp/shiny v0.0.0-20240707233637-46b078467d37 // indirect
+require golang.org/x/exp/shiny v0.0.0-20250819193227-8b4c13bb791b // indirect
 
 require (
 	github.com/ebitengine/gomobile v0.0.0-20240911145611-4856209ac325 // indirect
@@ -21,13 +21,13 @@ require (
 	github.com/go-text/render v0.2.0 // indirect
 	github.com/hajimehoshi/ebiten/v2 v2.8.6
 	github.com/jezek/xgb v1.1.1 // indirect
-	golang.org/x/sync v0.13.0 // indirect
+	golang.org/x/sync v0.17.0 // indirect
 )
 
 require (
 	gioui.org/cpu v0.0.0-20220412190645-f1e9e8c3b1f7 // indirect
 	github.com/BurntSushi/toml v1.4.0 // indirect
-	github.com/benoitkugler/textlayout v0.0.5 // indirect
+	github.com/benoitkugler/textlayout v0.0.10 // indirect
 	github.com/jeandeaual/go-locale v0.0.0-20240223122105-ce5225dcaa49 // indirect
 	github.com/jolestar/go-commons-pool v2.0.0+incompatible // indirect
 	github.com/nicksnyder/go-i18n/v2 v2.4.0 // indirect
@@ -57,7 +57,7 @@ require (
 	github.com/stretchr/testify v1.9.0 // indirect
 	github.com/yuin/goldmark v1.7.1 // indirect
 	//golang.org/x/net v0.0.0-20220708220712-1185a9018129 // indirect
-	golang.org/x/text v0.24.0 // indirect
+	golang.org/x/text v0.29.0 // indirect
 	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
@@ -66,8 +66,8 @@ require (
 require (
 	fyne.io/fyne/v2 v2.5.2
 	golang.org/x/exp v0.0.0-20250215185904-eff6e970281f
-	golang.org/x/image v0.21.0 // indirect
-	golang.org/x/sys v0.32.0 // indirect
+	golang.org/x/image v0.31.0 // indirect
+	golang.org/x/sys v0.36.0 // indirect
 )
 
 //require github.com/go-gl/glfw/v3.3.2/glfw v0.0.0-20211213063430-748e38ca8aec
@@ -90,7 +90,7 @@ replace fyne.io/fyne/v2 v2.5.2 => github.com/mrjrieke/fyne/v2 v2.5.2-1
 
 //replace fyne.io/fyne/v2 v2.1.3 => github.com/mrjrieke/fyne/v2 v2.1.3-6
 
-//replace gioui.org v0.0.0-20220318070519-8833a6738a3b => github.com/mrjrieke/gio v0.0.0-20220406132257-ec1380c11ef0
+replace gioui.org => github.com/mrjrieke/gio v0.0.0-20220330104157-7c6cde14da4f
 
 replace github.com/g3n/engine v0.2.0 => github.com/mrjrieke/engine v0.2.1-0.20230107141038-8bd28c2897c4
 
