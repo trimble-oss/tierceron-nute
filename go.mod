@@ -8,8 +8,8 @@ require (
 	github.com/g3n/engine v0.2.0
 	github.com/trimble-oss/tierceron-nute-core v1.0.4
 	golang.org/x/mobile v0.0.0-20250911085028-6912353760cf
-	google.golang.org/grpc v1.72.1
-	google.golang.org/protobuf v1.36.6
+	google.golang.org/grpc v1.79.3
+	google.golang.org/protobuf v1.36.10
 )
 
 require golang.org/x/exp/shiny v0.0.0-20250819193227-8b4c13bb791b // indirect
