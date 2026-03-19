@@ -6,7 +6,7 @@ require (
 	gioui.org v0.8.0
 	github.com/ftbe/dawg v0.0.0-20131228112149-aadae8139481
 	github.com/g3n/engine v0.2.0
-	github.com/trimble-oss/tierceron-nute-core v1.0.4
+	github.com/trimble-oss/tierceron-nute-core v1.0.5
 	golang.org/x/mobile v0.0.0-20250911085028-6912353760cf
 	google.golang.org/grpc v1.79.3
 	google.golang.org/protobuf v1.36.10
