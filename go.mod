@@ -21,7 +21,7 @@ require (
 	github.com/go-text/render v0.2.0 // indirect
 	github.com/hajimehoshi/ebiten/v2 v2.8.6
 	github.com/jezek/xgb v1.1.1 // indirect
-	golang.org/x/sync v0.19.0 // indirect
+	golang.org/x/sync v0.20.0 // indirect
 )
 
 require (
@@ -57,7 +57,7 @@ require (
 	github.com/stretchr/testify v1.11.1 // indirect
 	github.com/yuin/goldmark v1.7.1 // indirect
 	//golang.org/x/net v0.0.0-20220708220712-1185a9018129 // indirect
-	golang.org/x/text v0.34.0 // indirect
+	golang.org/x/text v0.35.0 // indirect
 	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
@@ -66,7 +66,7 @@ require (
 require (
 	fyne.io/fyne/v2 v2.5.2
 	golang.org/x/exp v0.0.0-20250215185904-eff6e970281f
-	golang.org/x/image v0.31.0 // indirect
+	golang.org/x/image v0.38.0 // indirect
 	golang.org/x/sys v0.41.0 // indirect
 )
 
