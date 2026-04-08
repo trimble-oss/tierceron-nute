@@ -6,7 +6,7 @@ require (
 	gioui.org v0.8.0
 	github.com/ftbe/dawg v0.0.0-20131228112149-aadae8139481
 	github.com/g3n/engine v0.2.0
-	github.com/trimble-oss/tierceron-nute-core v1.0.5
+	github.com/trimble-oss/tierceron-nute-core v1.0.6
 	golang.org/x/mobile v0.0.0-20250911085028-6912353760cf
 	google.golang.org/grpc v1.79.3
 	google.golang.org/protobuf v1.36.10
@@ -97,9 +97,9 @@ replace github.com/g3n/engine v0.2.0 => github.com/mrjrieke/engine v0.2.1-0.2023
 replace github.com/fyne-io/glfw-js v0.0.0-20220120001248-ee7290d23504 => github.com/mrjrieke/glfw-js v0.0.0-20220409154018-95a896685cdb
 
 replace (
-	go.opentelemetry.io/otel => go.opentelemetry.io/otel v1.40.0
-	go.opentelemetry.io/otel/metric => go.opentelemetry.io/otel/metric v1.40.0
-	go.opentelemetry.io/otel/sdk => go.opentelemetry.io/otel/sdk v1.40.0
-	go.opentelemetry.io/otel/sdk/metric => go.opentelemetry.io/otel/sdk/metric v1.40.0
-	go.opentelemetry.io/otel/trace => go.opentelemetry.io/otel/trace v1.40.0
+	go.opentelemetry.io/otel => go.opentelemetry.io/otel v1.43.0
+	go.opentelemetry.io/otel/metric => go.opentelemetry.io/otel/metric v1.43.0
+	go.opentelemetry.io/otel/sdk => go.opentelemetry.io/otel/sdk v1.43.0
+	go.opentelemetry.io/otel/sdk/metric => go.opentelemetry.io/otel/sdk/metric v1.43.0
+	go.opentelemetry.io/otel/trace => go.opentelemetry.io/otel/trace v1.43.0
 )
