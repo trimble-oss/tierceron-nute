@@ -1,15 +1,15 @@
 module github.com/trimble-oss/tierceron-nute
 
-go 1.25.1
+go 1.26.4
 
 require (
 	gioui.org v0.8.0
 	github.com/ftbe/dawg v0.0.0-20131228112149-aadae8139481
 	github.com/g3n/engine v0.2.0
-	github.com/trimble-oss/tierceron-nute-core v1.0.6
+	github.com/trimble-oss/tierceron-nute-core v1.0.7
 	golang.org/x/mobile v0.0.0-20250911085028-6912353760cf
-	google.golang.org/grpc v1.79.3
-	google.golang.org/protobuf v1.36.10
+	google.golang.org/grpc v1.81.1
+	google.golang.org/protobuf v1.36.11
 )
 
 require golang.org/x/exp/shiny v0.0.0-20250819193227-8b4c13bb791b // indirect
@@ -57,7 +57,7 @@ require (
 	github.com/stretchr/testify v1.11.1 // indirect
 	github.com/yuin/goldmark v1.7.1 // indirect
 	//golang.org/x/net v0.0.0-20220708220712-1185a9018129 // indirect
-	golang.org/x/text v0.35.0 // indirect
+	golang.org/x/text v0.37.0 // indirect
 	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
@@ -67,7 +67,7 @@ require (
 	fyne.io/fyne/v2 v2.5.2
 	golang.org/x/exp v0.0.0-20250215185904-eff6e970281f
 	golang.org/x/image v0.38.0 // indirect
-	golang.org/x/sys v0.41.0 // indirect
+	golang.org/x/sys v0.45.0 // indirect
 )
 
 //require github.com/go-gl/glfw/v3.3.2/glfw v0.0.0-20211213063430-748e38ca8aec
@@ -75,7 +75,7 @@ require (
 require (
 	github.com/faiface/mainthread v0.0.0-20171120011319-8b78f0a41ae3
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20240506104042-037f3cc74f2a
-	golang.org/x/net v0.49.0 // indirect
+	golang.org/x/net v0.55.0 // indirect
 )
 
 // Uncomment for local development
