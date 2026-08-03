@@ -8,7 +8,7 @@ require (
 	github.com/g3n/engine v0.2.0
 	github.com/trimble-oss/tierceron-nute-core v1.0.7
 	golang.org/x/mobile v0.0.0-20250911085028-6912353760cf
-	google.golang.org/grpc v1.81.1
+	google.golang.org/grpc v1.82.1
 	google.golang.org/protobuf v1.36.11
 )
 
