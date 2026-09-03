@@ -20,12 +20,16 @@ import (
 // also sets up signal handling in event of either system
 // shutting down.
 
-var clientConnectionConfigs *mashupsdk.MashupConnectionConfigs
-var serverConnectionConfigs *mashupsdk.MashupConnectionConfigs
+var (
+	clientConnectionConfigs *mashupsdk.MashupConnectionConfigs
+	serverConnectionConfigs *mashupsdk.MashupConnectionConfigs
+)
 
-var maxMessage int
-var initHandler mashupsdk.MashupContextInitHandler
-var security bool
+var (
+	maxMessage  int
+	initHandler mashupsdk.MashupContextInitHandler
+	security    bool
+)
 
 // RemoteInitServer -- Bootstraps the initialization of the remote server with the location specified in creds paramater
 func RemoteInitServer(creds string, insecure bool, maxMessageLength int, mashupApiHandler mashupsdk.MashupApiHandler, mashupContextInitHandler mashupsdk.MashupContextInitHandler) {
@@ -140,7 +144,7 @@ func InitServer(creds string, insecure bool, maxMessageLength int, mashupApiHand
 			defaultDialOpt = grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(maxMessageLength), grpc.MaxCallSendMsgSize(maxMessageLength))
 		}
 		// Send credentials back to client....
-		conn, err := grpc.Dial(handshakeConfigs.Server+":"+strconv.Itoa(int(handshakeConfigs.Port)), defaultDialOpt, grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{ServerName: "", RootCAs: mashupCertPool, InsecureSkipVerify: insecure})))
+		conn, err := grpc.Dial(handshakeConfigs.Server+":"+strconv.Itoa(int(handshakeConfigs.Port)), defaultDialOpt, grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{ServerName: "", RootCAs: mashupCertPool, MinVersion: tls.VersionTLS12, InsecureSkipVerify: insecure})))
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 		}
@@ -183,6 +187,5 @@ func InitServer(creds string, insecure bool, maxMessageLength int, mashupApiHand
 			panic(err)
 		}
 		log.Printf("Handshake complete.\n")
-
 	}(mashupApiHandler)
 }

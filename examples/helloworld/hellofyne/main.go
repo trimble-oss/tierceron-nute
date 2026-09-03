@@ -21,8 +21,7 @@ type HelloContext struct {
 	mashupContext *mashupsdk.MashupContext // Needed for callbacks to other mashups
 }
 
-type fyneMashupApiHandler struct {
-}
+type fyneMashupApiHandler struct{}
 
 var helloContext HelloContext
 
@@ -84,7 +83,6 @@ func (ha *HelloApp) TorusParser(childId int64) {
 		for _, cId := range child.GetChildids() {
 			ha.TorusParser(cId)
 		}
-
 	}
 }
 
@@ -132,7 +130,7 @@ func main() {
 	insecure := flag.Bool("tls-skip-validation", false, "Skip server validation")
 	flag.Parse()
 
-	helloLog, err := os.OpenFile("hellofyne.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	helloLog, err := os.OpenFile("hellofyne.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o666)
 	if err != nil {
 		log.Fatalf(err.Error(), err)
 	}
@@ -157,25 +155,25 @@ func main() {
 			"Outside": {
 				GuiWidgetBundle: mashupsdk.GuiWidgetBundle{
 					GuiComponent:          nil,
-					MashupDetailedElement: &mashupsdk.MashupDetailedElement{}, //mashupDetailedElementLibrary["Outside"],
+					MashupDetailedElement: &mashupsdk.MashupDetailedElement{}, // mashupDetailedElementLibrary["Outside"],
 				},
 			},
 			"It": {
 				GuiWidgetBundle: mashupsdk.GuiWidgetBundle{
 					GuiComponent:          nil,
-					MashupDetailedElement: &mashupsdk.MashupDetailedElement{}, //mashupDetailedElementLibrary["{0}-Torus"],
+					MashupDetailedElement: &mashupsdk.MashupDetailedElement{}, // mashupDetailedElementLibrary["{0}-Torus"],
 				},
 			},
 			"Up-Side-Down": {
 				GuiWidgetBundle: mashupsdk.GuiWidgetBundle{
 					GuiComponent:          nil,
-					MashupDetailedElement: &mashupsdk.MashupDetailedElement{}, //mashupDetailedElementLibrary["{0}-SharedAttitude"],
+					MashupDetailedElement: &mashupsdk.MashupDetailedElement{}, // mashupDetailedElementLibrary["{0}-SharedAttitude"],
 				},
 			},
 			"All": {
 				GuiWidgetBundle: mashupsdk.GuiWidgetBundle{
 					GuiComponent:          nil,
-					MashupDetailedElement: &mashupsdk.MashupDetailedElement{}, //mashupDetailedElementLibrary["{0}-SharedAttitude"],
+					MashupDetailedElement: &mashupsdk.MashupDetailedElement{}, // mashupDetailedElementLibrary["{0}-SharedAttitude"],
 				},
 			},
 		},
@@ -324,12 +322,12 @@ func main() {
 					if upsertErr != nil {
 						log.Printf("Element state initialization failure: %s\n", upsertErr.Error())
 					}
-					fmt.Println("Couldn't obtain mashup elements")
+					fmt.Fprintln(os.Stderr, "Couldn't obtain mashup elements")
 					os.Exit(-1)
 				}
 
 				for _, concreteElement := range concreteElementBundle.DetailedElements {
-					//helloApp.fyneComponentCache[generatedComponent.Basisid]
+					// helloApp.fyneComponentCache[generatedComponent.Basisid]
 					helloApp.mashupDetailedElementLibrary[concreteElement.Id] = concreteElement
 					helloApp.elementLoaderIndex[concreteElement.Name] = concreteElement.Id
 
@@ -456,7 +454,7 @@ func (mSdk *fyneMashupApiHandler) OnDisplayChange(displayHint *mashupsdk.MashupD
 		// TODO: Resize without infinite looping....
 		// The moment fyne is resized, it'll want to resize g3n...
 		// Which then wants to resize fyne ad-infinitum
-		//helloApp.mainWin.PosResize(int(displayHint.Xpos), int(displayHint.Ypos), int(displayHint.Width), int(displayHint.Height))
+		// helloApp.mainWin.PosResize(int(displayHint.Xpos), int(displayHint.Ypos), int(displayHint.Width), int(displayHint.Height))
 		log.Printf("Fyne Received OnDisplayChange xpos: %d ypos: %d width: %d height: %d ytranslate: %d\n", int(displayHint.Xpos), int(displayHint.Ypos), int(displayHint.Width), int(displayHint.Height), int(displayHint.Ypos+displayHint.Height))
 	} else {
 		log.Printf("Fyne Could not apply xpos: %d ypos: %d width: %d height: %d ytranslate: %d\n", int(displayHint.Xpos), int(displayHint.Ypos), int(displayHint.Width), int(displayHint.Height), int(displayHint.Ypos+displayHint.Height))
@@ -523,7 +521,7 @@ func (mSdk *fyneMashupApiHandler) TweakStates(elementStateBundle *mashupsdk.Mash
 func (mSdk *fyneMashupApiHandler) TweakStatesByMotiv(motivIn *mashupsdk.Motiv) (*emptypb.Empty, error) {
 	log.Printf("Fyne Received TweakStatesByMotiv\n")
 	// TODO: Find and TweakStates...
-	fmt.Println(motivIn.Code)
+	fmt.Fprintln(os.Stderr, motivIn.Code)
 
 	log.Printf("Fyne finished TweakStatesByMotiv handle.\n")
 	return &emptypb.Empty{}, nil

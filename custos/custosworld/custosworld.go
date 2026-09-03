@@ -2,7 +2,6 @@ package custosworld
 
 import (
 	"log"
-	"os"
 	"sort"
 
 	"github.com/davecgh/go-spew/spew"
@@ -19,18 +18,15 @@ import (
 	"github.com/trimble-oss/tierceron-nute/mashupsdk/server"
 )
 
-type mashupSdkApiHandler struct {
-}
+type mashupSdkApiHandler struct{}
 
-type worldClientInitHandler struct {
-}
+type worldClientInitHandler struct{}
 
 type ICustosRenderer interface {
 	OnSelected(tabItem *container.TabItem)
 }
 
-type fyneMashupApiHandler struct {
-}
+type fyneMashupApiHandler struct{}
 
 type CustosContext struct {
 	mashupContext *mashupsdk.MashupContext // Needed for callbacks to other mashups
@@ -112,7 +108,8 @@ func (w *CustosWorldApp) InitServer(callerCreds string, insecure bool, maxMessag
 func NewCustosWorldApp(headless bool,
 	titlebar bool,
 	detailedElements []*mashupsdk.MashupDetailedElement,
-	renderer ICustosRenderer) *CustosWorldApp {
+	renderer ICustosRenderer,
+) *CustosWorldApp {
 	CUWorldApp = &CustosWorldApp{
 		Headless:                     headless,
 		Titlebar:                     titlebar,
@@ -132,8 +129,7 @@ func NewCustosWorldApp(headless bool,
 	return CUWorldApp
 }
 
-type InitEvent struct {
-}
+type InitEvent struct{}
 
 func (w *CustosWorldApp) ResetChangeStates() []*mashupsdk.MashupElementState {
 	changedElements := []*mashupsdk.MashupElementState{}
@@ -177,7 +173,9 @@ func (w *CustosWorldApp) InitMainWindow() {
 				CUWorldApp.HeadsupFyneContext.mashupContext.Client.Shutdown(CUWorldApp.HeadsupFyneContext.mashupContext, &mashupsdk.MashupEmpty{AuthToken: client.GetServerAuthToken()})
 			}
 			log.Printf("Custos shutting down.")
-			os.Exit(0)
+			if app := fyne.CurrentApp(); app != nil {
+				app.Quit()
+			}
 		})
 	}
 	runtimeHandler := func() {
@@ -219,7 +217,7 @@ func (mSdk *mashupSdkApiHandler) OnDisplayChange(displayHint *mashupsdk.MashupDi
 		// TODO: Resize without infinite looping....
 		// The moment fyne is resized, it'll want to resize g3n...
 		// Which then wants to resize fyne ad-infinitum
-		//CUWorldApp.MainWin.PosResize(int(displayHint.Xpos), int(displayHint.Ypos), int(displayHint.Width), int(displayHint.Height))
+		// CUWorldApp.MainWin.PosResize(int(displayHint.Xpos), int(displayHint.Ypos), int(displayHint.Width), int(displayHint.Height))
 		log.Printf("CustosWorld Received OnDisplayChange xpos: %d ypos: %d width: %d height: %d ytranslate: %d\n", int(displayHint.Xpos), int(displayHint.Ypos), int(displayHint.Width), int(displayHint.Height), int(displayHint.Ypos+displayHint.Height))
 	} else {
 		log.Printf("CustosWorld Could not apply xpos: %d ypos: %d width: %d height: %d ytranslate: %d\n", int(displayHint.Xpos), int(displayHint.Ypos), int(displayHint.Width), int(displayHint.Height), int(displayHint.Ypos+displayHint.Height))
@@ -261,14 +259,14 @@ func (mSdk *mashupSdkApiHandler) UpsertElements(detailedElementBundle *mashupsdk
 	log.Printf("CustosWorld Received UpsertElements\n")
 
 	for _, concreteElement := range detailedElementBundle.DetailedElements {
-		//helloApp.fyneComponentCache[generatedComponent.Basisid]
+		// helloApp.fyneComponentCache[generatedComponent.Basisid]
 		CUWorldApp.MashupDetailedElementLibrary[concreteElement.Id] = concreteElement
 		CUWorldApp.ElementLoaderIndex[concreteElement.Name] = concreteElement.Id
 	}
 	dawgKeys := maps.Keys(CUWorldApp.ElementLoaderIndex)
-	//log.Printf("Searchables: %s", spew.Sdump(dawgKeys))
+	// log.Printf("Searchables: %s", spew.Sdump(dawgKeys))
 	CUWorldApp.ElementFinder = dawg.CreateDAWG(dawgKeys)
-	//log.Printf(spew.Sdump(CUWorldApp.ElementFinder))  !! Don't ever uncomment this!  Sdump can't handle it!
+	// log.Printf(spew.Sdump(CUWorldApp.ElementFinder))  !! Don't ever uncomment this!  Sdump can't handle it!
 
 	log.Printf("CustosWorld parsing tori.\n")
 	for _, concreteElement := range detailedElementBundle.DetailedElements {
@@ -289,7 +287,6 @@ func (mSdk *mashupSdkApiHandler) UpsertElements(detailedElementBundle *mashupsdk
 }
 
 func (mSdk *mashupSdkApiHandler) setStateHelper(g3nId int64, x mashupsdk.DisplayElementState) {
-
 	child := CUWorldApp.MashupDetailedElementLibrary[g3nId]
 	if child.Genre != "Attitude" {
 		child.SetElementState(mashupsdk.DisplayElementState(x))
