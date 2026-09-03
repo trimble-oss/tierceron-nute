@@ -25,12 +25,16 @@ import (
 // mashup, handshaking, and establishing credential sets.  It
 // also sets up signal handling in event of either system
 // shutting down.
-var handshakeConnectionConfigs *mashupsdk.MashupConnectionConfigs
-var clientConnectionConfigs *mashupsdk.MashupConnectionConfigs
-var serverConnectionConfigs *mashupsdk.MashupConnectionConfigs
+var (
+	handshakeConnectionConfigs *mashupsdk.MashupConnectionConfigs
+	clientConnectionConfigs    *mashupsdk.MashupConnectionConfigs
+	serverConnectionConfigs    *mashupsdk.MashupConnectionConfigs
+)
 
-var mashupContext *mashupsdk.MashupContext
-var insecure *bool
+var (
+	mashupContext *mashupsdk.MashupContext
+	insecure      *bool
+)
 
 var handshakeCompleteChan chan bool
 
@@ -40,7 +44,7 @@ var mashupCertBytes []byte
 func forkMashup(mashupGoodies map[string]interface{}) error {
 	// exPath string, envParams []string, params []string
 
-	var procAttr = syscall.ProcAttr{
+	procAttr := syscall.ProcAttr{
 		Dir:   ".",
 		Env:   append([]string{"DISPLAY=:0.0"}, mashupGoodies["ENV"].([]string)...),
 		Files: nil,
@@ -56,7 +60,7 @@ func forkMashup(mashupGoodies map[string]interface{}) error {
 		log.Fatalf("Couldn't exec mashup: %v", lookupErr)
 	}
 
-	var pid, forkErr = syscall.ForkExec(mashupPath, params, &procAttr)
+	pid, forkErr := syscall.ForkExec(mashupPath, params, &procAttr)
 	if forkErr != nil {
 		log.Fatalf("Couldn't exec mashup: %v", forkErr)
 	}
@@ -71,7 +75,8 @@ func forkMashup(mashupGoodies map[string]interface{}) error {
 // otherwise, will collaborate with server so both server and client
 // can upsert elements
 func remoteInitContext(mashupApiHandler mashupsdk.MashupApiHandler,
-	mashupGoodies map[string]interface{}, flume bool) *mashupsdk.MashupContext {
+	mashupGoodies map[string]interface{}, flume bool,
+) *mashupsdk.MashupContext {
 	log.Printf("Initializing Remote Mashup. \n")
 	handshakeCompleteChan = make(chan bool)
 	var err error
@@ -159,7 +164,7 @@ func remoteInitContext(mashupApiHandler mashupsdk.MashupApiHandler,
 	}
 	mashupCertPool.AddCert(mashupClientCert)
 
-	conn, err := grpc.Dial(server_name+":"+strconv.Itoa(int(server_port)), grpc.EmptyDialOption{}, grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{ServerName: "", RootCAs: mashupCertPool, InsecureSkipVerify: *insecure})))
+	conn, err := grpc.Dial(server_name+":"+strconv.Itoa(int(server_port)), grpc.EmptyDialOption{}, grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{ServerName: "", RootCAs: mashupCertPool, MinVersion: tls.VersionTLS12, InsecureSkipVerify: *insecure})))
 	if err != nil {
 		log.Printf("did not connect: %v", err)
 		return nil
@@ -186,7 +191,8 @@ func remoteInitContext(mashupApiHandler mashupsdk.MashupApiHandler,
 }
 
 func initContext(mashupApiHandler mashupsdk.MashupApiHandler,
-	mashupGoodies map[string]interface{}) *mashupsdk.MashupContext {
+	mashupGoodies map[string]interface{},
+) *mashupsdk.MashupContext {
 	log.Printf("Initializing Mashup.\n")
 
 	handshakeCompleteChan = make(chan bool)
@@ -279,7 +285,8 @@ func BootstrapInit(mashupPath string,
 	mashupApiHandler mashupsdk.MashupApiHandler,
 	envParams []string,
 	params []string,
-	insecure *bool) *mashupsdk.MashupContext {
+	insecure *bool,
+) *mashupsdk.MashupContext {
 	return BootstrapInitWithMessageExt(mashupPath, mashupApiHandler, envParams, params, insecure, -1)
 }
 
@@ -291,8 +298,8 @@ func BootstrapInitWithMessageExt(mashupPath string,
 	mashupApiHandler mashupsdk.MashupApiHandler,
 	envParams []string,
 	params []string,
-	insecure *bool, maxMessageLength int) *mashupsdk.MashupContext {
-
+	insecure *bool, maxMessageLength int,
+) *mashupsdk.MashupContext {
 	mashupGoodies := map[string]interface{}{}
 	mashupGoodies["MASHUP_PATH"] = mashupPath
 	if envParams == nil {

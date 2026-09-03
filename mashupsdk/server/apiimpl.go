@@ -79,7 +79,7 @@ func (s *MashupServer) CollaborateBootstrap(ctx context.Context, in *sdk.MashupC
 		defaultDialOpt = grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(maxMessage), grpc.MaxCallSendMsgSize(maxMessage))
 	}
 	// Send credentials back to client....
-	remote_conn, err := grpc.Dial(in.Server+":"+strconv.Itoa(int(in.Port)), defaultDialOpt, grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{ServerName: "", RootCAs: mashupCertPool, InsecureSkipVerify: security})))
+	remote_conn, err := grpc.Dial(in.Server+":"+strconv.Itoa(int(in.Port)), defaultDialOpt, grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{ServerName: "", RootCAs: mashupCertPool, MinVersion: tls.VersionTLS12, InsecureSkipVerify: security})))
 	if err != nil {
 		log.Printf("did not connect: %v", err)
 		return nil, err

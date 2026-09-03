@@ -82,7 +82,7 @@ func (c *MashupClient) CollaborateInit(ctx context.Context, in *mashupsdk.Mashup
 
 	log.Printf("Initiating connection to server with insecure: %t\n", *insecure)
 	// Connect to it.
-	conn, err := grpc.Dial(serverConnectionConfigs.Server+":"+strconv.Itoa(int(serverConnectionConfigs.Port)), clientDialOptions, grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{ServerName: "", RootCAs: mashupCertPool, InsecureSkipVerify: *insecure})))
+	conn, err := grpc.Dial(serverConnectionConfigs.Server+":"+strconv.Itoa(int(serverConnectionConfigs.Port)), clientDialOptions, grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{ServerName: "", RootCAs: mashupCertPool, MinVersion: tls.VersionTLS12, InsecureSkipVerify: *insecure})))
 	if err != nil {
 		log.Printf("did not connect: %v", err)
 		return nil, err

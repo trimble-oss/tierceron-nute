@@ -3,6 +3,7 @@ package g3nrender
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/g3n/engine/core"
 	"github.com/g3n/engine/geometry"
@@ -26,7 +27,7 @@ func (tr *TorusRenderer) NewSolidAtPosition(g3n *g3nmash.G3nDetailedElement, vpo
 	torusGeom := geometry.NewTorus(1, .4, 12, 32, math32.Pi*2)
 	mat := material.NewStandard(g3ndpalette.DARK_BLUE)
 	torusMesh := graphic.NewMesh(torusGeom, mat)
-	fmt.Printf("LoaderID: %s\n", g3n.GetDisplayName())
+	fmt.Fprintf(os.Stderr, "LoaderID: %s\n", g3n.GetDisplayName())
 	torusMesh.SetLoaderID(g3n.GetDisplayName())
 	torusMesh.SetPositionVec(vpos)
 	return torusMesh
@@ -61,7 +62,8 @@ func (tr *TorusRenderer) NextCoordinate(g3n *g3nmash.G3nDetailedElement, totalEl
 }
 
 func (tr *TorusRenderer) Layout(worldApp *g3nworld.WorldApp,
-	g3nRenderableElements []*g3nmash.G3nDetailedElement) {
+	g3nRenderableElements []*g3nmash.G3nDetailedElement,
+) {
 	tr.GenericRenderer.LayoutBase(worldApp, tr, g3nRenderableElements)
 }
 
@@ -79,7 +81,6 @@ func (tr *TorusRenderer) RemoveAll(worldApp *g3nworld.WorldApp, childId int64) {
 			}
 		}
 	}
-
 }
 
 func (tr *TorusRenderer) RenderElement(worldApp *g3nworld.WorldApp, g3nDetailedElement *g3nmash.G3nDetailedElement) bool {
@@ -109,7 +110,7 @@ func (tr *TorusRenderer) RenderElement(worldApp *g3nworld.WorldApp, g3nDetailedE
 		if graphicMesh, isGraphicMesh := mesh.(*graphic.Mesh); isGraphicMesh {
 			activePosition := graphicMesh.GetGraphic().Position()
 			tr.activeSet[g3nDetailedElement.GetDetailedElement().GetId()] = &activePosition
-			fmt.Printf("Active element centered at %v\n", activePosition)
+			fmt.Fprintf(os.Stderr, "Active element centered at %v\n", activePosition)
 		}
 
 	} else {
@@ -132,7 +133,6 @@ func (tr *TorusRenderer) RenderElement(worldApp *g3nworld.WorldApp, g3nDetailedE
 }
 
 func (tr *TorusRenderer) Collaborate(worldApp *g3nworld.WorldApp, collaboratingRenderer IG3nRenderer) {
-
 	backgroundRenderer := collaboratingRenderer.(*BackgroundRenderer)
 	tr.ActiveColor = &backgroundRenderer.ActiveColor
 }

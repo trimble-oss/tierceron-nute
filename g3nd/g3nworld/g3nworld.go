@@ -32,11 +32,9 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-type mashupSdkApiHandler struct {
-}
+type mashupSdkApiHandler struct{}
 
-type worldClientInitHandler struct {
-}
+type worldClientInitHandler struct{}
 
 // TODO: Can I get rid of this definition?
 // -- duplicated in genericrenderer.go.
@@ -101,14 +99,13 @@ func NewWorldApp(headless bool, custos bool, renderer IG3nRenderer, displayRende
 	return &worldApp
 }
 
-type InitEvent struct {
-}
+type InitEvent struct{}
 
 func (w *WorldApp) SetFrameRate(targetFPS uint) {
 	if w.currentTargetFPS == targetFPS {
 		return
 	} else {
-		//fmt.Printf("Setting framerate to: %d\n", targetFPS)
+		// fmt.Fprintf(os.Stderr, "Setting framerate to: %d\n", targetFPS)
 		w.currentTargetFPS = targetFPS
 		if targetFPS > 0 {
 			w.frameRater = util.NewFrameRater(targetFPS)
@@ -495,12 +492,12 @@ func (w *WorldApp) InitMainWindow() {
 		if iWindow, iWindowOk := (*w.MainWin).IWindow.(*window.GlfwWindow); iWindowOk {
 
 			// TODO: OSX enable?
-			//iWindow.Window.SetAttrib(glfw.OpenGLForwardCompatible, glfw.True)
-			//iWindow.Window.SetAttrib(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
-			//iWindow.Window.SetAttrib(glfw.CocoaGraphicsSwitching, 1)
-			//iWindow.Window.SetAttrib(glfw.Samples, 0)
-			//iWindow.Window.SetAttrib(glfw.Visible, glfw.False)
-			//iWindow.Window.SetAttrib(glfw.RefreshRate, glfw.DontCare)
+			// iWindow.Window.SetAttrib(glfw.OpenGLForwardCompatible, glfw.True)
+			// iWindow.Window.SetAttrib(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
+			// iWindow.Window.SetAttrib(glfw.CocoaGraphicsSwitching, 1)
+			// iWindow.Window.SetAttrib(glfw.Samples, 0)
+			// iWindow.Window.SetAttrib(glfw.Visible, glfw.False)
+			// iWindow.Window.SetAttrib(glfw.RefreshRate, glfw.DontCare)
 
 			iWindow.Window.SetAttrib(glfw.Floating, 1)
 			iWindow.Window.SetAttrib(glfw.FocusOnShow, 1)
@@ -593,7 +590,7 @@ func (w *WorldApp) InitMainWindow() {
 					if g3nDetailedIndex, ok := w.elementLoaderIndex[intersections[0].Object.GetNode().LoaderID()]; ok {
 						if g3nDetailedElement, ok := w.ConcreteElements[g3nDetailedIndex]; ok {
 							g3nDetailedElement.ApplyState(mashupsdk.Clicked, true)
-							fmt.Printf("matched: %s\n", g3nDetailedElement.GetDisplayName())
+							fmt.Fprintf(os.Stderr, "matched: %s\n", g3nDetailedElement.GetDisplayName())
 							itemMatched = true
 							for _, clickedElement := range w.ClickedElements {
 								if clickedElement.GetDisplayId() != g3nDetailedElement.GetDisplayId() {
@@ -653,7 +650,6 @@ func (w *WorldApp) InitMainWindow() {
 					w.MashupContext.Client.TweakStates(w.MashupContext, &elementStateBundle)
 				}
 			}
-
 		})
 
 		// Create and add lights to the scene
@@ -711,7 +707,6 @@ func (w *WorldApp) InitMainWindow() {
 	}
 	runtimeHandler := func(renderer *renderer.Renderer, deltaTime time.Duration) {
 		if iWindow, iWindowOk := (*w.MainWin).IWindow.(*window.GlfwWindow); iWindowOk {
-
 			if iWindow.Window.GetAttrib(glfw.Focused) != 1 {
 				w.SetFrameRate(5)
 			} else {
@@ -844,7 +839,6 @@ func (mSdk *mashupSdkApiHandler) UpsertElements(detailedElementBundle *mashupsdk
 }
 
 func (mSdk *mashupSdkApiHandler) applyStateHelper(g3nId int64, x mashupsdk.DisplayElementState, isset bool) {
-
 	child := worldApp.ConcreteElements[g3nId]
 	child.ApplyState(mashupsdk.DisplayElementState(x), isset)
 
@@ -856,7 +850,6 @@ func (mSdk *mashupSdkApiHandler) applyStateHelper(g3nId int64, x mashupsdk.Displ
 }
 
 func (mSdk *mashupSdkApiHandler) setStateHelper(g3nId int64, x mashupsdk.DisplayElementState) {
-
 	child := worldApp.ConcreteElements[g3nId]
 	if child.GetDetailedElement().Genre != "Attitude" {
 		child.SetElementState(mashupsdk.DisplayElementState(x))
