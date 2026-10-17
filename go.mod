@@ -1,6 +1,6 @@
 module github.com/trimble-oss/tierceron-nute
 
-go 1.27.0
+go 1.27.2
 
 require (
 	fyne.io/fyne/v2 v2.5.2
@@ -15,7 +15,7 @@ require (
 	golang.org/x/exp v0.0.0-20250215185904-eff6e970281f
 	golang.org/x/mobile v0.0.0-20250911085028-6912353760cf
 	google.golang.org/grpc v1.83.2
-	google.golang.org/protobuf v1.36.11
+	google.golang.org/protobuf v1.36.12
 )
 
 require (
